@@ -9,7 +9,7 @@ module.exports = (req, res) => {
   const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
   const base = proto + '://' + host;
   const dest = id ? base + '/#/m/' + id : base + '/';
-  const img = base + '/og-share.png';
+  const img = base + '/og-card.png';
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400');
   res.status(200).send(
