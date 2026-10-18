@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
       const n = await sbFetch('/rest/v1/news?select=id,title,body&id=eq.' + q(parseInt(id, 10)), token);
       const row = n.ok && n.body && n.body[0];
       if (!row) return res.status(404).json({ error: 'Nyheten hittades inte' });
-      heading = 'Nyhet från Golden Tank';
+      heading = 'Nyhet';
       message = String(row.title || (row.body || '').slice(0, 120) || 'Ny nyhet i appen').slice(0, 140);
       ref = String(row.id);
     } else {
