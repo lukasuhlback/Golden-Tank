@@ -69,25 +69,41 @@ module.exports = async (req, res) => {
       return res.status(500).json({ error: 'push_log: ' + JSON.stringify(ins.body) });
     }
 
-    // 4) Skicka via OneSignal REST API.
-    const r = await fetch('https://api.onesignal.com/notifications?c=push', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Key ' + process.env.ONESIGNAL_REST_API_KEY },
-      body: JSON.stringify({
-        app_id: process.env.ONESIGNAL_APP_ID,
-        target_channel: 'push',
-        included_segments: ['Subscribed Users'],
-        headings: { en: heading, sv: heading },
-        contents: { en: message, sv: message },
-        url,
-      }),
+    // 4) Skicka via OneSignal REST API (https://documentation.onesignal.com/reference/push-notification).
+    // OneSignal svarar 200 även när inget skickats: då är "id" tomt och "errors" innehåller t.ex.
+    // "All included players are not subscribed". Det händer när målgruppen (segmentet) är tom eller har
+    // ett namn som inte matchar. Nya OneSignal-appar har segmentet "Total Subscriptions"; äldre har
+    // "Subscribed Users". Vi provar därför flera i tur och ordning (eller det du anger i ONESIGNAL_SEGMENT).
+    const segs = process.env.ONESIGNAL_SEGMENT
+      ? [process.env.ONESIGNAL_SEGMENT]
+      : ['Total Subscriptions', 'Subscribed Users', 'Active Subscriptions'];
+    const mkPayload = (segment) => ({
+      app_id: process.env.ONESIGNAL_APP_ID,
+      target_channel: 'push',
+      included_segments: [segment],
+      headings: { en: heading, sv: heading },
+      contents: { en: message, sv: message },
+      url,
     });
-    const out = await r.json().catch(() => ({}));
-    if (!r.ok || out.errors) {
-      await sbFetch('/rest/v1/push_log?kind=eq.' + q(kind) + '&ref=eq.' + q(ref), token, { method: 'DELETE' }); // så att man kan försöka igen
-      return res.status(502).json({ error: 'OneSignal: ' + JSON.stringify(out.errors || out) });
+    const tried = [];
+    let sent = null;
+    for (const segment of segs) {
+      const payload = mkPayload(segment);
+      const r = await fetch('https://api.onesignal.com/notifications?c=push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Key ' + process.env.ONESIGNAL_REST_API_KEY },
+        body: JSON.stringify(payload),
+      });
+      const out = await r.json().catch(() => ({}));
+      console.log('OneSignal', segment, r.status, JSON.stringify(out), JSON.stringify(payload));
+      if (r.ok && out.id && !out.errors) { sent = { out, payload, segment }; break; }
+      tried.push({ segment, status: r.status, errors: out.errors || out });
     }
-    return res.status(200).json({ sent: true, id: out.id, recipients: out.recipients == null ? null : out.recipients });
+    if (!sent) {
+      await sbFetch('/rest/v1/push_log?kind=eq.' + q(kind) + '&ref=eq.' + q(ref), token, { method: 'DELETE' }); // så att man kan försöka igen
+      return res.status(502).json({ error: 'OneSignal: ' + JSON.stringify(tried) });
+    }
+    return res.status(200).json({ sent: true, id: sent.out.id, recipients: sent.out.recipients == null ? null : sent.out.recipients, segment: sent.segment, payload: sent.payload });
   } catch (e) {
     return res.status(500).json({ error: String(e && e.message || e) });
   }
