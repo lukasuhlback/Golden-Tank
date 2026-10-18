@@ -45,17 +45,15 @@ module.exports = async (req, res) => {
       const m = await sbFetch('/rest/v1/matches?select=id,opp,gf,ga,prelim,series&id=eq.' + q(parseInt(id, 10)), token);
       const row = m.ok && m.body && m.body[0];
       if (!row) return res.status(404).json({ error: 'Matchen hittades inte' });
-      const s = await sbFetch('/rest/v1/series?select=lab&key=eq.' + q(row.series), token);
-      const lab = s.ok && s.body && s.body[0] && s.body[0].lab;
-      heading = row.prelim ? 'Preliminärt resultat' : 'Slutresultat';
-      message = 'Golden Tank ' + row.gf + '–' + row.ga + ' ' + row.opp + (lab ? ' · ' + lab : '');
+      heading = (row.prelim ? 'Preliminärt resultat' : 'Slutresultat') + ' ⚽️';
+      message = 'GT - ' + row.opp + ' ' + row.gf + '-' + row.ga;
       url = site + '/#/m/' + row.id;
       ref = row.id + ':' + (row.prelim ? 'p' : 'f'); // preliminärt och slutligt resultat får vars en notis
     } else if (kind === 'news') {
       const n = await sbFetch('/rest/v1/news?select=id,title,body&id=eq.' + q(parseInt(id, 10)), token);
       const row = n.ok && n.body && n.body[0];
       if (!row) return res.status(404).json({ error: 'Nyheten hittades inte' });
-      heading = 'Nyhet';
+      heading = 'Nyhet 🔔';
       message = String(row.title || (row.body || '').slice(0, 120) || 'Ny nyhet i appen').slice(0, 140);
       ref = String(row.id);
     } else {
