@@ -3,6 +3,31 @@
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<!-- OneSignal pushnotiser -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function (OneSignal) {
+  await OneSignal.init({
+    appId: "a0be2ee3-3fef-4829-9555-797b2f4db885",
+    allowLocalhostAsSecureOrigin: true,
+    promptOptions: {
+      slidedown: {
+        prompts: [{
+          type: "push",
+          autoPrompt: true,
+          text: {
+            actionMessage: "Vill du få notiser om matcher, resultat och nyheter från Golden Tank?",
+            acceptButton: "Ja tack",
+            cancelButton: "Inte nu"
+          },
+          delay: { pageViews: 1, timeDelay: 8 }
+        }]
+      }
+    }
+  });
+});
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Golden Tank">
