@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
       const ex = await L.svc('/rest/v1/player_profiles?select=user_id&player_id=eq.' + player.id);
       if (ex.ok && ex.body && ex.body.length) return res.status(409).json({ error: 'Spelaren har redan en inloggning' });
       const cu = await L.authAdmin('/users', { method: 'POST', body: JSON.stringify({ email, password, email_confirm: true }) });
-      if (!cu.ok) return res.status(400).json({ error: 'Kunde inte skapa användaren: ' + ((cu.body && (cu.body.msg || cu.body.message || cu.body.error_description)) || cu.status) });
+      if (!cu.ok) return res.status(400).json({ error: (/already|registered|exists/i.test(JSON.stringify(cu.body)) ? 'E-posten har redan ett konto – använd "Koppla befintligt konto" i stället. ' : '') + 'Kunde inte skapa användaren: ' + ((cu.body && (cu.body.msg || cu.body.message || cu.body.error_description)) || cu.status) });
       const uid = cu.body.id;
       const ins = await L.svc('/rest/v1/player_profiles', { method: 'POST', body: JSON.stringify({ user_id: uid, player_id: player.id, full_name: player.name, email, shirt_no: player.no || '', position: player.pos || '' }) });
       if (!ins.ok) {
@@ -73,6 +73,26 @@ module.exports = async (req, res) => {
       }
       if (b.make_admin) await setAdmin(email, true);
       return res.status(200).json({ ok: true, user_id: uid });
+    }
+
+    if (act === 'link') {
+      // Koppla ett BEFINTLIGT konto (t.ex. adminens eget) till en spelare, utan nytt konto/ny e-post.
+      const pr = await L.svc('/rest/v1/players?select=id,name,no,pos&id=eq.' + L.q(parseInt(b.player_id, 10)));
+      const player = pr.ok && pr.body && pr.body[0];
+      if (!player) return res.status(404).json({ error: 'Spelaren hittades inte' });
+      let target = { id: me.id, email: me.email };
+      if (b.email && String(b.email).toLowerCase() !== String(me.email).toLowerCase()) {
+        const u = await L.authAdmin('/users?per_page=1000');
+        const list = u.ok && u.body && (u.body.users || u.body);
+        const f = (Array.isArray(list) ? list : []).find((x) => String(x.email).toLowerCase() === String(b.email).toLowerCase());
+        if (!f) return res.status(404).json({ error: 'Ingen användare med den e-posten' });
+        target = { id: f.id, email: f.email };
+      }
+      const [e1, e2] = await Promise.all([L.svc('/rest/v1/player_profiles?select=user_id&player_id=eq.' + player.id), L.svc('/rest/v1/player_profiles?select=user_id&user_id=eq.' + L.q(target.id))]);
+      if ((e1.body && e1.body.length) || (e2.body && e2.body.length)) return res.status(409).json({ error: 'Spelaren eller kontot är redan kopplat' });
+      const ins = await L.svc('/rest/v1/player_profiles', { method: 'POST', body: JSON.stringify({ user_id: target.id, player_id: player.id, full_name: player.name, email: String(target.email).toLowerCase(), shirt_no: player.no || '', position: player.pos || '' }) });
+      if (!ins.ok) return res.status(500).json({ error: 'Kunde inte koppla: ' + JSON.stringify(ins.body) });
+      return res.status(200).json({ ok: true, user_id: target.id });
     }
 
     const uid = String(b.user_id || '');

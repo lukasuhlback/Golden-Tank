@@ -5,8 +5,10 @@
 //     3 dagar före matchen kl 11:00, samma dag kl 20:30, dagen efter kl 12:00 och därefter dagligen kl 12:00
 //     tills spelaren svarat eller matchen spelats (svensk tid).
 // Auth: "Authorization: Bearer <CRON_SECRET>" (cron) eller inloggad admins token (manuell körning).
+// ?force=1 skickar nya kallelser direkt. Nya kallelser väntar annars 10 min (admin hinner ändra truppen).
 // Lägg till ?dry=1 för att se vad som skulle skickas utan att skicka eller markera något.
 const L = require('./_lib');
+const GRACE_MS = 10 * 60e3; // nya kallelser väntar 10 min så att admin hinner justera truppen
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -20,6 +22,7 @@ module.exports = async (req, res) => {
 
     const url = new URL(req.url || '/', 'http://x');
     const dry = url.searchParams.get('dry') === '1';
+    const force = url.searchParams.get('force') === '1'; // admin: skicka kallelser direkt (hoppa över 10 min betänketid)
     const nowMs = dry && url.searchParams.get('now') ? Date.parse(url.searchParams.get('now')) : Date.now();
     const nowIso = new Date(nowMs).toISOString();
     const site = L.siteUrl(req);
@@ -52,7 +55,7 @@ module.exports = async (req, res) => {
 
     // 1) Nya kallelser
     const byMatchNew = {};
-    calls.filter((c) => !c.invited_at && profByPlayer[c.player_id]).forEach((c) => { (byMatchNew[c.match_id] = byMatchNew[c.match_id] || []).push(c); });
+    calls.filter((c) => !c.invited_at && profByPlayer[c.player_id] && (force || nowMs - Date.parse(c.created_at) >= GRACE_MS)).forEach((c) => { (byMatchNew[c.match_id] = byMatchNew[c.match_id] || []).push(c); });
     for (const [mid, list] of Object.entries(byMatchNew)) {
       const f = fixtures[mid];
       const claimed = [];
