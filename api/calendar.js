@@ -1,7 +1,6 @@
-// Vercel-funktion: /api/calendar.ics?token=...
-// Kalenderflöde (iCalendar) som spelarna prenumererar på i mobilens kalender. Innehåller kommande matcher + admins kalenderhändelser.
-// Token (i tabellen calendar_config) gör att bara laget har länken. Admin kan byta token i Admin -> Kalender.
-const crypto = require('crypto');
+// Vercel-funktion: /api/calendar.ics
+// Öppet kalenderflöde (iCalendar) som vem som helst kan prenumerera på i mobilens kalender.
+// Innehåller kommande matcher + admins kalenderhändelser.
 const L = require('./_lib');
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -53,11 +52,6 @@ module.exports = async (req, res) => {
   try {
     const miss = L.missing(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']);
     if (miss.length) { res.statusCode = 500; return res.end('Saknar miljövariabler: ' + miss.join(', ')); }
-    const token = new URL(req.url || '/', 'http://x').searchParams.get('token') || '';
-    const c = await L.svc('/rest/v1/calendar_config?select=token&id=eq.1');
-    const real = c.ok && c.body && c.body[0] && String(c.body[0].token);
-    const a = Buffer.from(token), b = Buffer.from(real || '');
-    if (!real || a.length !== b.length || !crypto.timingSafeEqual(a, b)) { res.statusCode = 403; return res.end('Fel eller utgången länk'); }
     const since = new Date(Date.now() - 60 * 86400e3).toISOString().slice(0, 10);
     const [fx, ev] = await Promise.all([
       L.svc('/rest/v1/fixtures?select=id,opp,series,played_on,kickoff,venue&order=played_on'),
