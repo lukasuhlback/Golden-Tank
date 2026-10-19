@@ -72,21 +72,29 @@ module.exports = async (req, res) => {
     // "All included players are not subscribed". Det händer när målgruppen (segmentet) är tom eller har
     // ett namn som inte matchar. Nya OneSignal-appar har segmentet "Total Subscriptions"; äldre har
     // "Subscribed Users". Vi provar därför flera i tur och ordning (eller det du anger i ONESIGNAL_SEGMENT).
+    // Först: alla prenumeranter UTOM de som stängt av just den här notistypen i appen (tagg off_results / off_news
+    // sätts av appen när en inloggad spelare ändrar sina notisinställningar). Därefter: de namngivna segmenten.
+    const offTag = kind === 'result' ? 'off_results' : 'off_news';
     const segs = process.env.ONESIGNAL_SEGMENT
       ? [process.env.ONESIGNAL_SEGMENT]
       : ['Total Subscriptions', 'Subscribed Users', 'Active Subscriptions'];
-    const mkPayload = (segment) => ({
+    const targets = [
+      { name: 'filters:' + offTag, target: { filters: [{ field: 'tag', key: offTag, relation: 'not_exists' }] } },
+      ...segs.map((x) => ({ name: x, target: { included_segments: [x] } })),
+    ];
+    const mkPayload = (t) => ({
       app_id: process.env.ONESIGNAL_APP_ID,
       target_channel: 'push',
-      included_segments: [segment],
+      ...t.target,
       headings: { en: heading, sv: heading },
       contents: { en: message, sv: message },
       url,
     });
     const tried = [];
     let sent = null;
-    for (const segment of segs) {
-      const payload = mkPayload(segment);
+    for (const t of targets) {
+      const segment = t.name;
+      const payload = mkPayload(t);
       const r = await fetch('https://api.onesignal.com/notifications?c=push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Key ' + process.env.ONESIGNAL_REST_API_KEY },
