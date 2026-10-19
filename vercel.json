@@ -1,15 +1,32 @@
 {
   "functions": {
-    "api/logos.js": { "includeFiles": "Lagloggos/**" }
+    "api/logos.js": {
+      "includeFiles": "Lagloggos/**"
+    }
   },
   "headers": [
     {
       "source": "/OneSignalSDKWorker.js",
       "headers": [
-        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
-        { "key": "Service-Worker-Allowed", "value": "/" },
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/calendar.ics",
+      "destination": "/api/calendar"
     }
   ]
 }
