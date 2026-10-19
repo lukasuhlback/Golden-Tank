@@ -8,6 +8,7 @@
 // ?force=1 skickar nya kallelser direkt. Nya kallelser väntar annars 10 min (admin hinner ändra truppen).
 // Lägg till ?dry=1 för att se vad som skulle skickas utan att skicka eller markera något.
 const L = require('./_lib');
+const notifyOrders = require('./_orders');
 const GRACE_MS = 10 * 60e3; // nya kallelser väntar 10 min så att admin hinner justera truppen
 
 module.exports = async (req, res) => {
@@ -27,6 +28,10 @@ module.exports = async (req, res) => {
     const nowIso = new Date(nowMs).toISOString();
     const site = L.siteUrl(req);
 
+    // Säkerhetsnät: meddela om beställningar som missats (se /api/shop-order)
+    let ordRes = null;
+    if (!dry) { try { ordRes = await notifyOrders(site); } catch (e) { ordRes = { error: String(e.message || e) }; } }
+
     // Kommande matcher (fixtures tas bort när matchrapporten importerats)
     const todayStr = new Date(nowMs - 24 * 3600e3).toISOString().slice(0, 10);
     const fx = await L.svc('/rest/v1/fixtures?select=id,opp,played_on,kickoff&played_on=gte.' + todayStr);
@@ -37,7 +42,7 @@ module.exports = async (req, res) => {
       if (kickoffMs > nowMs) fixtures[f.id] = { ...f, slots, kickoffMs, date: String(f.played_on).slice(0, 10) };
     });
     const ids = Object.keys(fixtures);
-    const out = { dry, now: nowIso, fixtures: ids.length, invites: [], reminders: [] };
+    const out = { dry, now: nowIso, fixtures: ids.length, invites: [], reminders: [], orders: ordRes };
     if (!ids.length) return res.status(200).json(out);
 
     // Aktiva spelarprofiler + notisinställningar
