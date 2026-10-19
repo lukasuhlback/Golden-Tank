@@ -5,7 +5,8 @@
 //     3 dagar före matchen kl 11:00, samma dag kl 20:30, dagen efter kl 12:00 och därefter dagligen kl 12:00
 //     tills spelaren svarat eller matchen spelats (svensk tid).
 // Auth: "Authorization: Bearer <CRON_SECRET>" (cron) eller inloggad admins token (manuell körning).
-// ?force=1 skickar nya kallelser direkt. Nya kallelser väntar annars 10 min (admin hinner ändra truppen).
+// Kallelsen skickas automatiskt 3 dagar före matchen kl 11:00 (svensk tid). Matcher som läggs in med mindre tid kvar kallas efter 10 min.
+// ?force=1&match=<id> skickar kallelsen för just den matchen direkt (admin).
 // Lägg till ?dry=1 för att se vad som skulle skickas utan att skicka eller markera något.
 const L = require('./_lib');
 const notifyOrders = require('./_orders');
@@ -23,7 +24,7 @@ module.exports = async (req, res) => {
 
     const url = new URL(req.url || '/', 'http://x');
     const dry = url.searchParams.get('dry') === '1';
-    const force = url.searchParams.get('force') === '1'; // admin: skicka kallelser direkt (hoppa över 10 min betänketid)
+    const forceMatch = url.searchParams.get('force') === '1' ? String(url.searchParams.get('match') || '') : ''; // admin: skicka kallelser direkt för EN match
     const nowMs = dry && url.searchParams.get('now') ? Date.parse(url.searchParams.get('now')) : Date.now();
     const nowIso = new Date(nowMs).toISOString();
     const site = L.siteUrl(req);
@@ -39,7 +40,7 @@ module.exports = async (req, res) => {
     const fixtures = {};
     (fx.body || []).forEach((f) => {
       const { slots, kickoffMs } = L.reminderSlots(String(f.played_on).slice(0, 10), f.kickoff);
-      if (kickoffMs > nowMs) fixtures[f.id] = { ...f, slots, kickoffMs, date: String(f.played_on).slice(0, 10) };
+      if (kickoffMs > nowMs) fixtures[f.id] = { ...f, slots, kickoffMs, date: String(f.played_on).slice(0, 10), inviteAt: L.stockholmMs(L.addDays(String(f.played_on).slice(0, 10), -3), '11:00') };
     });
     const ids = Object.keys(fixtures);
     const out = { dry, now: nowIso, fixtures: ids.length, invites: [], reminders: [], orders: ordRes };
@@ -60,7 +61,7 @@ module.exports = async (req, res) => {
 
     // 1) Nya kallelser
     const byMatchNew = {};
-    calls.filter((c) => !c.invited_at && profByPlayer[c.player_id] && (force || nowMs - Date.parse(c.created_at) >= GRACE_MS)).forEach((c) => { (byMatchNew[c.match_id] = byMatchNew[c.match_id] || []).push(c); });
+    calls.filter((c) => !c.invited_at && profByPlayer[c.player_id] && ((forceMatch && String(c.match_id) === forceMatch) || (nowMs >= fixtures[c.match_id].inviteAt && nowMs - Date.parse(c.created_at) >= GRACE_MS))).forEach((c) => { (byMatchNew[c.match_id] = byMatchNew[c.match_id] || []).push(c); });
     for (const [mid, list] of Object.entries(byMatchNew)) {
       const f = fixtures[mid];
       const claimed = [];
@@ -81,7 +82,8 @@ module.exports = async (req, res) => {
       if (c.status || !c.invited_at || !profByPlayer[c.player_id]) continue;
       const f = fixtures[c.match_id];
       const created = Date.parse(c.created_at);
-      const due = f.slots.filter((t) => t <= nowMs && t > created); // endast tider efter att kallelsen skapats
+      const after = Math.max(created, Date.parse(c.invited_at) || 0);
+      const due = f.slots.filter((t) => t <= nowMs && t > after); // endast tider efter att kallelsen skapats/skickats
       if (!due.length) continue;
       const latest = Math.max(...due);
       if (c.last_reminder_at && Date.parse(c.last_reminder_at) >= latest) continue; // redan påmind för denna tidpunkt

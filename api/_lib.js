@@ -59,6 +59,27 @@ async function osPost(payload) {
   return { ok: r.ok && !!out.id && !out.errors, out, status: r.status };
 }
 
+// Läser om en användare har push påslaget i OneSignal. Resultat per user_id:
+//  'on' = minst en prenumeration som tillåter notiser, 'off' = enhet finns men notiser avstängda/avprenumererad,
+//  'none' = användaren har aldrig tillåtit/registrerat push, 'unknown' = kunde inte avgöras.
+async function pushStatus(userIds) {
+  const out = {}, ids = [...new Set(userIds)].filter(Boolean), app = env('ONESIGNAL_APP_ID'), key = env('ONESIGNAL_REST_API_KEY');
+  const one = async (id) => {
+    try {
+      const r = await fetch('https://api.onesignal.com/apps/' + app + '/users/by/external_id/' + encodeURIComponent(id), { headers: { Authorization: 'Key ' + key, Accept: 'application/json' } });
+      if (r.status === 404) { out[id] = 'none'; return; }
+      if (!r.ok) { out[id] = 'unknown'; return; }
+      const j = await r.json().catch(() => null);
+      const subs = (j && j.subscriptions) || [];
+      const push = subs.filter((s) => /push/i.test(String(s.type || '')));
+      if (!push.length) { out[id] = 'none'; return; }
+      out[id] = push.some((s) => s.enabled !== false && (s.notification_types == null || Number(s.notification_types) > 0)) ? 'on' : 'off';
+    } catch (e) { out[id] = 'unknown'; }
+  };
+  for (let i = 0; i < ids.length; i += 10) await Promise.all(ids.slice(i, i + 10).map(one));
+  return out;
+}
+
 // Skickar till specifika användare (Supabase user_id = OneSignal external_id).
 async function pushToUsers(ids, heading, message, url) {
   ids = [...new Set(ids)].filter(Boolean);
@@ -124,4 +145,4 @@ function readBody(req) {
   try { return typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {}; } catch (e) { return {}; }
 }
 
-module.exports = { env, missing, raw, rest, svc, authAdmin, bearer, getUser, isAdmin, q, osPost, pushToUsers, stockholmMs, addDays, niceDate, reminderSlots, siteUrl, readBody };
+module.exports = { env, missing, raw, rest, svc, authAdmin, bearer, getUser, isAdmin, q, osPost, pushStatus, pushToUsers, stockholmMs, addDays, niceDate, reminderSlots, siteUrl, readBody };
