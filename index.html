@@ -512,10 +512,10 @@ const pm=c.m,pgl=c.g,pas=c.a;c.m++;c.g+=row[1];c.a+=row[2];c.y+=row[3];c.r+=rd;c
 MSN.forEach(k=>{if(pm<k&&c.m>=k)add(1,'🎉','Milstolpe','har spelat '+k+' matcher för klubben',nm);if(pgl<k&&c.g>=k)add(1,'🎉','Milstolpe','har gjort '+k+' mål för klubben',nm);if(pas<k&&c.a>=k)add(1,'🎉','Milstolpe','har gjort '+k+' assist för klubben',nm)})});
 [['g','mål'],['a','assist'],['m','matcher'],['c','hållna nollor']].forEach(([k,lab])=>{let best=null;Object.keys(cum).forEach(nm=>{if(!best||cum[nm][k]>cum[best][k])best=nm});if(best&&cum[best][k]>L[k][1]){if(L[k][0]&&L[k][0]!=best&&L[k][1]>=20)add(0,'👑','Ny ledare genom tiderna','går om '+L[k][0]+' som flest '+lab+' i klubbens historia ('+cum[best][k]+')',best);L[k]=[best,cum[best][k]]}})});
 return out.sort((a,b)=>b.iso.localeCompare(a.iso)||a.pri-b.pri||(+b.id)-(+a.id))}
-const evCard=e=>{const p=e.who&&P.find(x=>x.name==e.who);return`<a class="card ms" href="${p?'#/spelare/'+p.id:'#/m/'+e.id}"><span class="av" style="width:50px;height:50px;display:grid;place-items:center;font-size:1.5rem;background:var(--bd)">${p?av(p):e.ic}</span><span style="flex:1"><b>${e.ic} ${esc(e.title)}</b>${e.who?`<span style="display:block;font-weight:700">${esc(e.who)}</span>`:''}<span style="display:block">${esc(e.text)}</span><span class="mut" style="font-size:.78rem">${esc(dlab2ms(e.iso))}</span></span></a>`};
-const newsCard=n=>`<div class="card">${n.img&&/^data:image\/(jpeg|png|webp);base64,/.test(n.img)?`<img src="${n.img}" alt="" style="width:100%;border-radius:12px;margin-bottom:10px;display:block">`:''}<b>${esc(n.title||'')}</b><div class="mut" style="font-size:.78rem;margin:2px 0 6px">${new Date(n.t).toLocaleDateString('sv-SE',{day:'numeric',month:'long'})}</div><div style="white-space:pre-wrap">${esc(n.text||'')}</div></div>`;
+const evCard=e=>{const p=e.who&&P.find(x=>x.name==e.who);return`<div style="position:relative">${shBtn('news','e|'+e.iso+'|'+(e.who||'')+'|'+e.title,'abs')}<a class="card ms" href="${p?'#/spelare/'+p.id:'#/m/'+e.id}"><span class="av" style="width:50px;height:50px;display:grid;place-items:center;font-size:1.5rem;background:var(--bd)">${p?av(p):e.ic}</span><span style="flex:1"><b>${e.ic} ${esc(e.title)}</b>${e.who?`<span style="display:block;font-weight:700">${esc(e.who)}</span>`:''}<span style="display:block">${esc(e.text)}</span><span class="mut" style="font-size:.78rem">${esc(dlab2ms(e.iso))}</span></span></a></div>`};
+const newsCard=n=>`<div class="card" style="position:relative">${shBtn('news','n|'+n.t,'abs')}${n.img&&/^data:image\/(jpeg|png|webp);base64,/.test(n.img)?`<img src="${n.img}" alt="" style="width:100%;border-radius:12px;margin-bottom:10px;display:block">`:''}<b>${esc(n.title||'')}</b><div class="mut" style="font-size:.78rem;margin:2px 0 6px">${new Date(n.t).toLocaleDateString('sv-SE',{day:'numeric',month:'long'})}</div><div style="white-space:pre-wrap">${esc(n.text||'')}</div></div>`;
 const allNews=(cut)=>{const ev=clubEvents().filter(m=>!cut||m.iso>=cut);return[...(ADM.news||[]).map(n=>({t:n.t,pri:-1,n})),...ev.map(m=>({t:Date.parse(m.iso+'T12:00:00'),pri:m.pri,m}))].sort((a,b)=>b.t-a.t||a.pri-b.pri)};
-const newsH=()=>{const cut=new Date(Date.now()-45*864e5).toISOString().slice(0,10),items=allNews(cut).slice(0,3);return`<h2>Nyheter</h2>${items.length?items.map(x=>x.m?evCard(x.m):newsCard(x.n)).join(''):'<div class="card"><span class="mut">Inga nyheter ännu.</span></div>'}<a class="mut" href="#/milstolpar" style="display:block;text-align:right;font-size:.85rem;margin-top:-4px">Visa mer ›</a>`};
+const newsH=()=>{const cut=new Date(Date.now()-45*864e5).toISOString().slice(0,10),items=allNews(cut).slice(0,3);return`<h2>Nyheter</h2>${items.length?items.map(x=>x.m?evCard(x.m):newsCard(x.n)).join(''):'<div class="card"><span class="mut">Inga nyheter ännu.</span></div>'}<a class="mut" href="#/milstolpar" style="display:block;text-align:right;font-size:.85rem;margin-top:-4px">Visa mer ›</a></div>`};
 function recCounts(){const c={};REC.forEach(s=>{if(s.g=='Årets utmärkelser')return;const r=s.r[0];if(r&&P.some(p=>p.name==r[1]))(c[r[1]]=c[r[1]]||[]).push(s)});return Object.entries(c).map(([n,l])=>({p:P.find(p=>p.name==n),n:l.length,l})).sort((a,b)=>b.n-a.n||(a.p.name<b.p.name?-1:1))}
 const podiumH=()=>{const t=recCounts().slice(0,3);if(!t.length)return'';const pos=[t[1],t[0],t[2]].map((x,i)=>x?{x,rk:[2,1,3][i]}:null).filter(Boolean);return`<div class="card hero pod"><a href="#/rekordhallare" style="color:#fff"><small>REKORDHÅLLARNA ›</small></a><div class="podr">${pos.map(({x,rk})=>`<a class="pt" href="#/rekordhallare"><span class="pm">${['🥇','🥈','🥉'][rk-1]}</span><span class="pa" style="width:${rk==1?84:64}px;height:${rk==1?84:64}px">${av(x.p)}</span><b>${esc(x.p.name.split(' ')[0])}</b><span class="pn">x${x.n} rekord</span></a>`).join('')}</div></div>`};
 
@@ -1048,7 +1048,7 @@ else if(ev)tile=`<button class="tile ev k-${esc(ev.kind||'')}" data-me="evinfo" 
 const lt=mt&&!mt.res&&serCol(mt.ser)&&lum(serCol(mt.ser))>.6;cells+=`<div class="cd${iso==today?' today':''}${lt?' lt':''}">${tile}${more>0?`<em class="more">+${more}</em>`:''}<i>${d}</i></div>`}
 for(let t=(lead+last)%7;t&&t<7;t++)cells+='<div class="cd e"></div>';
 const url=location.origin+'/api/calendar.ics',web=url.replace(/^https?:/,'webcal:');
-return`<h2>Kalender</h2><div class="calp"><button class="cnav l" data-me="calprev" aria-label="Föregående månad">‹</button><button class="cnav r" data-me="calnext" aria-label="Nästa månad">›</button><div class="cmon">${esc(name)}</div><div class="csub">Golden Tank Kalender ${y}</div><div class="cgrid"><div class="chd">${['Mån','Tis','Ons','Tors','Fre','Lör','Sön'].map(x=>`<span>${x}</span>`).join('')}</div>${cells}</div><div class="clogo">${tlogoH('Golden Tank','34px')}</div></div>
+return`<h2 class="shrow">Kalender ${shBtn('cal','','sm')}</h2><div class="calp"><button class="cnav l" data-me="calprev" aria-label="Föregående månad">‹</button><button class="cnav r" data-me="calnext" aria-label="Nästa månad">›</button><div class="cmon">${esc(name)}</div><div class="csub">Golden Tank Kalender ${y}</div><div class="cgrid"><div class="chd">${['Mån','Tis','Ons','Tors','Fre','Lör','Sön'].map(x=>`<span>${x}</span>`).join('')}</div>${cells}</div><div class="clogo">${tlogoH('Golden Tank','34px')}</div></div>
 <details class="calsub"><summary>📲 Prenumerera på kalendern</summary><div class="mut" style="font-size:.8rem;margin-top:8px">Matcher och lagevent läggs automatiskt in i din telefonkalender och uppdateras när admin ändrar.<div style="margin:10px 0"><a class="chip on" href="${esc(web)}">Prenumerera</a> <button class="chip" data-me="calcopy">Kopiera länk</button></div><b>iPhone:</b> tryck Prenumerera och sedan Lägg till.<br><b>Android:</b> tryck Kopiera länk. Öppna Google Kalender i webbläsaren (calendar.google.com) → Andra kalendrar (+) → Från webbadress → klistra in.</div></details>`}
 function showEv(iso){const L=(ME.events||[]).filter(e=>iso>=String(e.starts_on).slice(0,10)&&iso<=String(e.ends_on||e.starts_on).slice(0,10));if(!L.length)return;
 const fd=d=>new Date(d+'T12:00:00').toLocaleDateString('sv-SE',{weekday:'long',day:'numeric',month:'long'});
@@ -1243,6 +1243,42 @@ SHCARD.season={
   data[i].forEach((r,j)=>{const ry=ly+(post?56:70)+j*rowH,as=rowH-12;if(j==0)shGold(c,bx+8,ry,cw-16,rowH-4,20);else if(j>0){c.fillStyle='rgba(255,250,240,.1)';c.fillRect(bx+22,ry-2,cw-44,2)}const ink=j==0?SHI2:SHC;shAv(c,r.p||{name:r.name},bx+16,ry+(rowH-4-as)/2,as,imgs[i][j],j==0?SHI2:null);
    const nx=bx+16+as+10,fs=post?22:26;shT(c,r.name,nx,ry+rowH/2+fs*.28,{size:fs,weight:700,color:ink,max:cw-(nx-bx)-58});shT(c,r.v,bx+cw-18,ry+rowH/2+fs*.42,{size:fs*1.3,weight:900,color:j==0?SHI2:SHG,align:'right'})})})}
 };
+function shWrap(c,s,x,y,maxW,lh,maxL,o){o=o||{};const words=String(s).split(/\s+/);let line='',n=0;c.font=(o.weight||500)+' '+(o.size||40)+'px '+SHFONT;if('letterSpacing' in c)c.letterSpacing='0px';const lines=[];words.forEach(w=>{const t=line?line+' '+w:w;if(c.measureText(t).width>maxW&&line){lines.push(line);line=w}else line=t});if(line)lines.push(line);const cut=lines.slice(0,maxL);if(lines.length>maxL)cut[maxL-1]=cut[maxL-1].replace(/\s*\S*$/,'')+'…';cut.forEach((l,i)=>shT(c,l,x,y+i*lh,Object.assign({align:'center'},o)));return y+cut.length*lh}
+SHCARD.news={
+ opts:x=>[],defs:x=>({}),
+ async draw(c,W,H,x,o){const post=H<1500,logo=await shImg(LOGO);shBg(c,W,H);
+  const e=x.e,n=x.n;
+  if(e){const p=e.who&&P.find(q=>q.name==e.who),ph=p&&p.photo?await shImg(p.photo):null;
+   shT(c,'NYHET',W/2,post?120:170,{size:30,weight:700,align:'center',color:SHS,ls:14});
+   let y=post?150:230;const s=post?400:520;
+   if(p){shAv(c,p,(W-s)/2,y,s,ph,SHG);c.save();c.beginPath();c.arc(W/2+s*.36,y+s*.86,post?58:74,0,7);c.fillStyle=SHG;c.fill();c.restore();shT(c,e.ic,W/2+s*.36,y+s*.86+(post?20:26),{size:post?58:74,align:'center',weight:400});y+=s+(post?70:100);shT(c,p.name,W/2,y,{size:post?76:96,weight:900,align:'center',max:W-120});y+=post?50:72}
+   else{shGEmoji(c,e.ic,W/2,y+(post?170:230),post?190:250,'center');y+=s+(post?30:40)}
+   shT(c,e.title.toUpperCase(),W/2,y,{size:post?36:44,weight:800,align:'center',color:SHG,ls:4,max:W-140});y+=post?64:84;
+   y=shWrap(c,(p?'':'')+e.text,W/2,y,W-200,post?54:64,4,{size:post?44:52,weight:600,color:SHC});
+   shT(c,dlab2ms(e.iso),W/2,y+(post?30:44),{size:30,weight:600,align:'center',color:SHM})}
+  else{shT(c,'NYHET',W/2,post?120:170,{size:30,weight:700,align:'center',color:SHS,ls:14});let y=post?160:240;
+   const im=n.img&&/^data:image/.test(n.img)?await shImg(n.img):null;
+   if(im){const w=W-160,h=Math.min(post?420:700,w*im.height/im.width);c.save();shRR(c,80,y,w,h,40);c.clip();const a=im.width/im.height,dw=a>w/h?h*a:w,dh=a>w/h?h:w/a;c.drawImage(im,80+w/2-dw/2,y+h/2-dh/2,dw,dh);c.restore();y+=h+(post?64:90)}else y+=post?200:420;
+   y=shWrap(c,n.title||'',W/2,y,W-140,post?84:104,3,{size:post?76:92,weight:900,color:SHC});y+=post?24:40;
+   y=shWrap(c,n.text||'',W/2,y,W-200,post?52:62,post?5:9,{size:post?42:50,weight:500,color:SHC});
+   shT(c,new Date(n.t).toLocaleDateString('sv-SE',{day:'numeric',month:'long',year:'numeric'}),W/2,y+(post?30:50),{size:30,weight:600,align:'center',color:SHM})}
+  const by=H-(post?90:120);if(logo)c.drawImage(logo,W/2-34-190,by-52,68,68);shT(c,'GOLDEN TANK',W/2-110,by-4,{size:34,weight:800,ls:4});shT(c,SHARE_URL,W/2,by+44,{size:30,weight:600,align:'center',color:SHM})}
+};
+SHCARD.cal={
+ opts:x=>[],defs:x=>({}),
+ async draw(c,W,H,x,o){const post=H<1500;shBg(c,W,H);const now=new Date(),dt=new Date(now.getFullYear(),now.getMonth()+(x.off||0),1),y=dt.getFullYear(),m=dt.getMonth(),items=calItems(y,m),last=new Date(y,m+1,0).getDate(),lead=(dt.getDay()+6)%7,rows=Math.ceil((lead+last)/7),today=isoD(now.getFullYear(),now.getMonth(),now.getDate());
+  const nm=dt.toLocaleDateString('sv-SE',{month:'long'});shT(c,nm.toUpperCase(),W/2,post?150:230,{size:post?96:128,weight:900,align:'center',max:W-120});shT(c,'Golden Tank Kalender '+y,W/2,post?206:300,{size:post?28:34,weight:600,align:'center',color:SHM});
+  const gx=60,gw=W-120,cw=gw/7,top=post?280:400,hd=44,gap=8;shT(c,'',0,0,{});['Mån','Tis','Ons','Tors','Fre','Lör','Sön'].forEach((d,i)=>shT(c,d,gx+i*cw+cw/2,top+30,{size:26,weight:700,align:'center',color:SHS}));
+  const ch=Math.min(post?150:200,(H-(post?100:150)-(top+hd))/rows),by={};items.forEach(i=>(by[i.iso]=by[i.iso]||[]).push(i));const lg={};await Promise.all(items.filter(i=>i.match).map(async i=>{lg[i.opp]=await shLogoImg(i.opp)}));
+  for(let d=1;d<=last;d++){const idx=lead+d-1,cx=gx+(idx%7)*cw+gap/2,cy=top+hd+Math.floor(idx/7)*ch+gap/2,w=cw-gap,h=ch-gap,iso=isoD(y,m,d),L=by[iso]||[],mt=L.find(q=>q.match),ev=L.find(q=>!q.match);
+   let fill='rgba(255,250,240,.06)',stroke=null,ink=SHC;
+   if(mt){fill=mt.res=='V'?'#2f8f55':mt.res=='F'?'#b83a3a':mt.res=='O'?'#8a8a8a':SHG;if(!mt.res)ink=SHI2}else if(ev){fill='rgba(233,196,106,.2)';stroke='rgba(242,194,0,.5)'}
+   if(iso==today)stroke=SHG;shBox(c,cx,cy,w,h,22,fill,stroke,iso==today?4:2);
+   shT(c,d,cx+14,cy+30,{size:24,weight:800,color:mt?(mt.res?'#fff':SHI2):SHM});
+   if(mt){const r=Math.min(w,h)*.26;shTeamLogo(c,lg[mt.opp],mt.opp,cx+w/2,cy+h*.5,r);shT(c,mt.res?mt.score:mt.short,cx+w/2,cy+h-16,{size:mt.res?30:22,weight:800,align:'center',color:mt.res?'#fff':SHI2,max:w-14})}
+   else if(ev){c.font=(h*.3)+'px '+SHFONT;c.textAlign='center';c.fillStyle=SHC;c.fillText(ev.ic,cx+w/2,cy+h*.58);shT(c,ev.short,cx+w/2,cy+h-14,{size:21,weight:700,align:'center',color:SHC,max:w-12})}}
+  const ly=H-(post?60:90);[['V','#2f8f55','Vinst'],['O','#8a8a8a','Oavgjort'],['F','#b83a3a','Förlust'],['',SHG,'Kommande']].forEach((l,i)=>{const lx=W/2-340+i*190;shBox(c,lx,ly-16,22,22,6,l[1]);shT(c,l[2],lx+34,ly+2,{size:24,weight:600,color:SHM})})}
+};
 // Klubbshop
 SHCARD.shop={
  opts:x=>x.item?[]:[{k:'n',l:'Antal',ch:[[2,'2 st'],[4,'4 st'],[6,'6 st']]}],
@@ -1266,7 +1302,7 @@ function shEnsureUI(){if(document.getElementById('shm'))return;const st=document
 #shm .act{display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;border:0;border-radius:16px;padding:13px 16px;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;color:#fff;text-align:left}#shm .act.ig{background:linear-gradient(45deg,#f9a03f,#e1306c,#833ab4)}#shm .act.sv{background:#3b6ea5}#shm .act small{display:block;font-weight:500;opacity:.9;font-size:.76rem}#shm .act[disabled]{opacity:.5}#shm .x{display:block;margin:12px auto 0;background:none;border:0;color:var(--mut);font:inherit;cursor:pointer}#shm .msg{font-size:.82rem;color:var(--mut);text-align:center;margin-top:8px;min-height:1.1em}`;document.head.appendChild(st);
 const d=document.createElement('div');d.id='shm';d.innerHTML='<div class="shs" role="dialog" aria-modal="true" aria-label="Dela som bild"><h3 id="shT">Dela som bild</h3><div class="pv"><canvas id="shc" width="540" height="960"></canvas></div><div id="sho"></div><button class="act ig" data-shm="ig" type="button"><span style="font-size:1.4rem">📷</span><span>Dela på Instagram<small>Välj Story eller Inlägg i Instagram</small></span></button><button class="act sv" data-shm="save" type="button"><span style="font-size:1.4rem">⬇️</span><span>Spara bild i telefonen</span></button><div class="msg" id="shmsg"></div><button class="x" data-shm="close" type="button">Stäng</button></div>';document.body.appendChild(d);
 d.addEventListener('click',e=>{if(e.target===d){shClose();return}const b=e.target.closest('[data-shm]');if(!b)return;const a=b.dataset.shm;if(a=='close')shClose();else if(a=='ig')shOut(false);else if(a=='save')shOut(true);else if(a=='opt'){SHS_.o[b.dataset.k]=JSON.parse(b.dataset.v);shOptsUI();shDraw()}});document.addEventListener('keydown',e=>{if(e.key=='Escape')shClose()})}
-const SHTITLE={list:'Dela topplistan',prof:'Dela spelarprofil',next:'Dela matchen',result:'Dela resultatet',trophy:'Dela trofé-skåpet',season:'Dela säsongen',shop:'Dela från klubbshopen'};
+const SHTITLE={news:'Dela nyheten',cal:'Dela kalendern',list:'Dela topplistan',prof:'Dela spelarprofil',next:'Dela matchen',result:'Dela resultatet',trophy:'Dela trofé-skåpet',season:'Dela säsongen',shop:'Dela från klubbshopen'};
 function shOptsUI(){const S=SHS_,card=SHCARD[S.kind],groups=[{k:'fmt',l:'Format',ch:[['story','📱 Story 9:16'],['post','🖼 Inlägg 4:5']]}].concat(card.opts(S.ctx,S.o));document.getElementById('sho').innerHTML=groups.map(g=>`<div class="lab">${g.l}</div><div class="seg">${g.ch.map(([v,l])=>`<button type="button" data-shm="opt" data-k="${g.k}" data-v='${JSON.stringify(v)}' class="${S.o[g.k]===v?'on':''}">${esc(l)}</button>`).join('')}</div>`).join('')}
 function shOpen(kind,ctx){if(!ctx||!SHCARD[kind])return;shEnsureUI();const card=SHCARD[kind];SHS_={kind,ctx,o:Object.assign({fmt:'story'},card.defs(ctx))};document.getElementById('shT').textContent=SHTITLE[kind]||'Dela som bild';document.getElementById('shmsg').textContent='';shOptsUI();document.getElementById('shm').classList.add('on');document.body.style.overflow='hidden';shDraw()}
 function shClose(){const d=document.getElementById('shm');if(d)d.classList.remove('on');document.body.style.overflow=''}
@@ -1290,8 +1326,11 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-sh]');if(!
  else if(t=='trophyT'){k='trophy';ctx={}}
  else if(t=='trophyP'){k='trophy';const p=P.find(y=>String(y.id)==x);if(p)ctx={p}}
  else if(t=='season'){ctx={ser:x||''}}
+ else if(t=='news'){const [kk,a1,w1,...tp]=x.split('|'),ti=tp.join('|');if(kk=='n'){const n=(ADM.news||[]).find(q=>String(q.t)==a1);if(n)ctx={n}}else{const ev=clubEvents().find(q=>q.iso==a1&&(q.who||'')==w1&&q.title==ti);if(ev)ctx={e:ev}}}
+ else if(t=='cal'){ctx={off:CALM}}
  else if(t=='shop'){const it=x&&(DB.shop||[]).find(y=>String(y.id)==x);ctx=it?{item:it}:{}}}catch(err){console.error(err)}
  if(ctx)shOpen(k,ctx)},true);
+shEnsureUI();
 
 REC=buildRec();addEventListener('hashchange',route);route();renderCallPanels();loadEvents().then(renderHomeCal);
 try{new MutationObserver(()=>{const el=document.getElementById('homecal');if(el&&!el.firstChild)renderHomeCal()}).observe(app,{childList:true,subtree:true})}catch(e){}
