@@ -60,7 +60,7 @@ h1{font-size:1.6rem;margin:4px 0 14px}h2{font-size:1.05rem;margin:22px 0 10px}
 .rc{background:var(--red)}
 .res{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;color:#fff;font-weight:800;font-size:.8rem}
 .V{background:#2f9e5b}.O{background:#f08c00}.F{background:var(--red)}
-nav{position:fixed;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-around;gap:2px;padding:6px;z-index:9;border-radius:999px;border:1px solid rgba(255,255,255,.75);background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,248,232,.42));-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);box-shadow:0 12px 32px rgba(70,45,10,.20),0 2px 6px rgba(70,45,10,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35)}
+nav{position:fixed;left:14px;right:14px;bottom:calc(max(env(safe-area-inset-bottom,0px) - 6px,8px));display:flex;justify-content:space-around;gap:2px;padding:6px;z-index:9;border-radius:999px;border:1px solid rgba(255,255,255,.75);background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,248,232,.42));-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);box-shadow:0 12px 32px rgba(70,45,10,.20),0 2px 6px rgba(70,45,10,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35)}
 nav a{flex:1;text-align:center;font-size:.68rem;font-weight:600;color:var(--tx);padding:8px 0 6px;border-radius:999px;transition:background .2s,color .2s}nav a span{display:block;line-height:0;margin-bottom:3px}nav a svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}nav a.on{color:var(--ac);background:rgba(110,90,55,.15);box-shadow:inset 0 1px 2px rgba(255,255,255,.6)}
 #app{padding-bottom:110px}
 .stat{position:relative}.rk2{position:absolute;top:10px;right:12px;font-size:.7rem;color:var(--mut);font-weight:600}.rk2.f1{color:var(--ac);font-weight:800}
@@ -137,6 +137,51 @@ main{padding-top:56px!important}
 .cleg{display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;margin-top:12px;font-size:.58rem;letter-spacing:.06em;text-transform:uppercase}.cleg span{display:inline-flex;align-items:center;gap:4px}.cleg s{width:9px;height:9px;border-radius:50%;display:inline-block;border:1px solid rgba(255,250,240,.7)}
 .calsub{margin:2px 4px 14px;text-align:center}.calsub summary{display:inline-block;cursor:pointer;font-size:.82rem;color:var(--mut);text-decoration:underline;list-style:none}.calsub summary::-webkit-details-marker{display:none}.calsub[open]{text-align:left}.calsub[open] summary{display:block;text-align:center}
 .clogo{display:flex;justify-content:center;margin-top:10px;opacity:.95}
+/* ---- skjuts (uppdatering 49) */
+body.sk-lock{overflow:hidden}
+#rsh{position:fixed;inset:0;z-index:200}
+.sk-dim{position:absolute;inset:0;background:rgba(43,29,20,.5)}
+.sk-sheet{position:absolute;left:0;right:0;bottom:0;max-height:92%;overflow-y:auto;background:var(--card);border-radius:26px 26px 0 0;padding:10px 18px calc(26px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.28);animation:skup .22s ease-out}
+@keyframes skup{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.sk-hn{width:44px;height:5px;border-radius:9px;background:#d9c9a6;margin:0 auto 14px}
+.sk-sheet h3{margin:0 0 3px;font-size:1.25rem}.sk-sheet .s{color:var(--mut);font-size:.85rem;margin-bottom:14px}
+.sk-op,.sk-pl{display:flex;align-items:center;gap:14px;background:#fff;border:2px solid var(--bd);border-radius:18px;padding:13px 15px;margin-bottom:10px;cursor:pointer}
+.sk-op .e,.sk-pl .e{width:44px;height:44px;flex:none;border-radius:13px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.sk-op b,.sk-pl b{display:block;font-size:.98rem}.sk-op small,.sk-pl small{display:block;color:var(--mut);font-size:.78rem;overflow-wrap:anywhere}
+.sk-op.on,.sk-pl.on{border-color:var(--ac2);background:#fff8dc;box-shadow:0 0 0 4px rgba(242,194,0,.2)}
+.sk-skip{text-align:center;color:var(--mut);font-weight:700;padding:10px;cursor:pointer}
+.sk-go{display:block;text-align:center;background:#2b1d14;color:#fff;border-radius:14px;padding:14px;font-weight:800;margin-top:12px;cursor:pointer}.sk-go.y{background:var(--ac2);color:#2b1d14}
+.sk-lbl{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:14px 0 8px}
+.sk-stp{display:flex;align-items:center;justify-content:center;gap:18px;background:#fff;border:1px solid var(--bd);border-radius:18px;padding:12px}
+.sk-stp b{width:46px;height:46px;border-radius:50%;background:#efe3c6;display:flex;align-items:center;justify-content:center;font-size:1.5rem;cursor:pointer;user-select:none}
+.sk-stp .n{font-size:2.6rem;font-weight:900;min-width:60px;text-align:center}
+.sk-seats{display:flex;gap:6px;justify-content:center;margin-top:8px}.sk-seats i{width:22px;height:22px;border-radius:7px;background:var(--bd)}.sk-seats i.f{background:var(--ac2)}
+.sk-inp{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:9px 14px;margin-bottom:8px}
+.sk-inp small{display:block;color:var(--mut);font-size:.68rem;font-weight:700;text-transform:uppercase;margin-bottom:2px}
+.sk-inp input{width:100%;border:0;outline:0;background:transparent;font:inherit;color:var(--tx);padding:2px 0}
+.sk-add{border:2px dashed #cbbd9d;border-radius:18px;padding:13px;text-align:center;font-weight:800;color:var(--mut);cursor:pointer;margin-bottom:6px}
+.sk-note{background:var(--bg);border-radius:14px;padding:10px 12px;font-size:.78rem;color:var(--mut);margin:10px 0 2px}
+.sk-chp{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 6px}.sk-chp span{padding:8px 13px;border-radius:99px;background:#fff;border:1.5px solid var(--bd);font-weight:700;font-size:.86rem;cursor:pointer}.sk-chp span.on{background:#2b1d14;color:#fff;border-color:#2b1d14}
+.sk-sug{background:#fff;border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:10px}.sk-sug div{padding:11px 14px;font-size:.86rem;border-top:1px solid #efe3c6;cursor:pointer}.sk-sug div:first-child{border-top:0}
+.sk-selp{background:#e4f3e6;border:1px solid #bfe0c4;color:#1f6b35;border-radius:12px;padding:9px 12px;font-size:.84rem;font-weight:700;margin-bottom:6px}
+.sk-err{background:#fde8e6;color:#b3261e;border-radius:12px;padding:10px 12px;margin-top:12px;font-size:.86rem;font-weight:600}
+.sk-car{background:#fff;border:2px solid var(--bd);border-radius:18px;padding:12px 14px;margin:8px 0}.sk-car.on{border-color:#2f9a55;background:#effaf1}.sk-car.full{opacity:.6}
+.sk-ct{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sk-ok{background:#2f9a55;color:#fff;border-radius:11px;padding:6px 11px;font-weight:800;font-size:.78rem}.sk-full{background:#cbbd9d;color:#fff;border-radius:11px;padding:6px 11px;font-weight:800;font-size:.78rem}
+.sk-pas{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.sk-pas span{background:var(--bg);border-radius:99px;padding:4px 10px;font-size:.78rem;font-weight:700}.sk-pas span small{font-weight:600;color:var(--mut)}.sk-pas span.em{background:transparent;border:1.5px dashed #cbbd9d;color:#a39275}
+.sk-box{margin-top:12px;border-top:1px solid var(--bd);padding-top:10px}.sk-h{font-weight:800}
+.sk-ov{margin-top:12px;border-top:1px solid var(--bd);padding-top:8px}
+.sk-big{display:block;width:100%;text-align:center;background:var(--ac2);border:0;border-radius:18px;padding:16px;font:inherit;font-size:1.15rem;font-weight:900;color:#2b1d14;box-shadow:0 8px 20px rgba(242,194,0,.35);margin:12px 0 4px;cursor:pointer}.sk-big small{display:block;font-size:.72rem;font-weight:700;opacity:.75;margin-top:3px}
+.sk-warn{background:#fdecc8;border:1px solid var(--ac2);border-radius:12px;padding:9px 12px;font-size:.82rem;font-weight:700;margin-top:8px;color:#6a4b00}
+.sk-tl{margin:12px 0 2px 2px}
+.sk-s{display:flex;gap:12px;padding-bottom:16px;position:relative;align-items:flex-start}
+.sk-s:before{content:'';position:absolute;left:10px;top:22px;bottom:-2px;width:3px;background:var(--bd);border-radius:2px}.sk-s:last-child:before{display:none}
+.sk-d{width:23px;height:23px;flex:none;border-radius:50%;background:#fff;border:3px solid #cbbd9d;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:900;color:#fff}
+.sk-d.me{border-color:var(--ac2);background:var(--ac2)}.sk-d.dn{border-color:#2f9a55;background:#2f9a55}.sk-d.fin{border-color:#2b1d14;background:#2b1d14}
+.sk-tm{font-weight:900;font-size:1rem;min-width:54px}.sk-tm small{display:block;font-size:.64rem;color:#a39275;font-weight:700}
+.sk-nm{font-weight:800;flex:1;min-width:0;font-size:.92rem}.sk-nm small{display:block;color:var(--mut);font-weight:600;font-size:.76rem;overflow-wrap:anywhere}
+.sk-hb{align-self:center;padding:6px 11px;border-radius:10px;border:0;background:#2b1d14;color:#fff;font:inherit;font-weight:800;font-size:.76rem;cursor:pointer}.sk-hb.d{background:#e4f3e6;color:#1f6b35}
+.sk-std{background:var(--ac2);border-radius:99px;padding:3px 10px;font-size:.7rem;font-weight:800}
 </style></head><body><main id="app"></main><nav id="nav"></nav>
 <script src="config.js"></script>
 <script type="module">
@@ -937,8 +982,8 @@ function route(){const _h=location.hash||'#/',_y=scrollY;let _go='top';if(_cur!=
 $('#nav').innerHTML=tabs.map(([h,i,l])=>`<a href="#/${h}" class="${(h||'home')==k||(k=='spelare'&&h=='trupp')||(['matcher','m','tabell','sasong','serie','lag','lagres'].includes(k)&&h=='match')||(['rek','rekordhallare'].includes(k)&&h=='rekord')||(k=='statistik'&&h=='klubb')||(k=='mot'&&h=='klubb')||(k=='shop'&&h=='klubb')||(k=='fav'&&h=='trupp')||(k=='sam'&&h=='trupp')?'on':''}"><span>${i}</span>${l}</a>`).join('')}
 // ---------- SPELARKONTON, KALLELSER, NOTISER
 const ME={user:null,admin:false,prof:null,prefs:null,calls:[],loaded:false,msg:'',recovery:false};
-const PREFS=[['calls','Matchkallelser'],['reminders','Påminnelser om obesvarade kallelser'],['results','Matchresultat'],['news','Nyheter'],['analyses','Matchanalyser'],['joins','När spelare anmäler sig till match'],['changes','När spelare ändrar svar'],['cancels','När en spelare lämnar återbud']];
-const PREF_DEF={calls:true,reminders:true,results:true,news:true,analyses:true,joins:false,changes:false,cancels:false};
+const PREFS=[['calls','Matchkallelser'],['reminders','Påminnelser om obesvarade kallelser'],['results','Matchresultat'],['news','Nyheter'],['analyses','Matchanalyser'],['joins','När spelare anmäler sig till match'],['changes','När spelare ändrar svar'],['cancels','När en spelare lämnar återbud'],['rides','Skjuts till matcher (tider och påminnelser)']];
+const PREF_DEF={calls:true,reminders:true,results:true,news:true,analyses:true,joins:false,changes:false,cancels:false,rides:true};
 const OFFTAG={results:'off_results',news:'off_news',analyses:'off_analyses'};
 const CSTAT={yes:['✅','Kommer'],no:['❌','Kommer inte'],maybe:['🤔','Avvaktar']};
 const REASONS=['Skadad','Jobbar','Bortrest','Sjuk','Annat'];
@@ -948,11 +993,11 @@ const osDo=fn=>{try{(window.OneSignalDeferred=window.OneSignalDeferred||[]).push
 const osLogin=id=>osDo(OS=>OS.login(id)),osLogout=()=>osDo(OS=>OS.logout());
 const osSyncTags=pr=>osDo(OS=>{const add={},rm=[];Object.entries(OFFTAG).forEach(([k,t])=>{if(pr&&pr[k]===false)add[t]='1';else rm.push(t)});if(Object.keys(add).length)OS.User.addTags(add);if(rm.length)OS.User.removeTags(rm)});
 async function api(path,body){const{data:{session}}=await sb.auth.getSession(),r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+(session?session.access_token:'')},body:JSON.stringify(body||{})}),d=await r.json().catch(()=>({}));if(!r.ok||d.error)throw new Error(d.error||('HTTP '+r.status));return d}
-async function loadCalls(){try{const r=await sb.from('match_calls').select('*');if(!r.error)ME.calls=r.data||[]}catch(e){}try{renderPf()}catch(e){}}
+async function loadCalls(){try{const r=await sb.from('match_calls').select('*');if(!r.error)ME.calls=r.data||[]}catch(e){}try{await loadRides()}catch(e){}try{renderPf()}catch(e){}}
 async function pollCalls(){if(document.hidden)return;if(!ME.user){await loadEvents();renderHomeCal();return}await Promise.all([loadCalls(),loadEvents()]);renderHomeCal();const a=document.activeElement;if(!(a&&a.closest&&a.closest('.callpanel')))renderCallPanels()}
 setInterval(pollCalls,60000);document.addEventListener('visibilitychange',pollCalls);addEventListener('focus',pollCalls);addEventListener('pageshow',pollCalls);
 async function loadMe(s){
-if(!s||!s.user){if(ME.user)osLogout();Object.assign(ME,{user:null,admin:false,prof:null,prefs:null,calls:[],loaded:true});return}
+if(!s||!s.user){if(ME.user)osLogout();Object.assign(ME,{user:null,admin:false,prof:null,prefs:null,calls:[],loaded:true});Object.assign(RD,{ok:false,places:[],rides:[],books:[],choices:[],plans:{}});return}
 const first=!ME.user||ME.user.id!=s.user.id;ME.user=s.user;ME.admin=!!AD.ok;
 const[p,pr]=await Promise.all([sb.from('player_profiles').select('*').eq('user_id',s.user.id).maybeSingle(),sb.from('notification_preferences').select('*').eq('user_id',s.user.id).maybeSingle()]);
 ME.prof=p.data||null;
@@ -982,24 +1027,194 @@ const pushStH=()=>{const p=typeof Notification!='undefined'?Notification.permiss
 V.konto=()=>{if(!ME.user)return`<h1>Mitt konto</h1>${needLogin()}`;const p=ME.prof;
 return`<h1>Mitt konto</h1>${msgH()}${ME.recovery?`<div class="card adm"><b>Välj nytt lösenord</b>${fld('npw','Nytt lösenord (minst 8 tecken)','','password')}<button class="chip on" data-me="savepw" style="margin-top:8px">Spara lösenord</button></div>`:''}
 <h2>Profil</h2><div class="card adm">${p?`<div class="row" style="gap:12px;align-items:center;margin-bottom:6px"><span class="av" style="width:56px;height:56px;flex:none">${av(P.find(x=>x.id==p.player_id)||{name:p.full_name,id:0})}</span><div><b>${esc(p.full_name)}</b><div class="mut" style="font-size:.8rem">${esc(ME.user.email)}${ME.admin?' · admin':''}</div></div></div>${fld('mph','Telefon',p.phone)}<button class="chip on" data-me="saveprof" style="margin-top:8px">Spara profil</button><div class="mut" style="font-size:.76rem;margin-top:8px">Namn, tröjnummer och position ändras av lagledaren.</div>`:`<b>${esc(ME.user.email)}</b>${ME.admin?' · admin':''}<div class="mut" style="margin-top:4px">Det här kontot är inte kopplat till någon spelare i truppen.${ME.admin?' <a href="#/admin"><b>Koppla till din spelare under Admin → Spelare ›</b></a>':''}</div>`}</div>
+${skPlacesH()}
 <h2>Notisinställningar</h2>${pushStH()}${prefsH()}
 <h2>Byt lösenord</h2><div class="card adm">${fld('npw2','Nytt lösenord (minst 8 tecken)','','password')}<button class="chip" data-me="savepw2" style="margin-top:8px">Byt lösenord</button></div>
 <div style="margin:18px 0"><button class="chip" data-me="logout">Logga ut</button></div>`};
 V.notiser=()=>V.konto();
 V.kallelser=()=>{if(!ME.user)return`<h1>Mina kallelser</h1>${needLogin()}`;if(!ME.loaded)return'<h1>Mina kallelser</h1><div class="card mut">Laddar…</div>';const L=upFix().filter(f=>!ME.prof||ME.calls.some(c=>c.match_id==f.id&&c.player_id==ME.prof.player_id));
 return`<h1>Mina kallelser</h1>${msgH()}${ME.prof?'':'<div class="card mut">Kontot är inte kopplat till en spelare – du ser anmälningarna men kan inte svara själv.</div>'}${L.length?L.map(f=>`<div class="card"><a href="#/u/${f.id}" style="color:inherit;text-decoration:none"><b>Golden Tank – ${esc(f.o)}</b><div class="mut" style="font-size:.82rem">${esc(f.d)}${f.dt&&f.dt.length>10?' kl '+f.dt.slice(11,16):''} · ${esc(sl(f.s))} ›</div></a><div class="callpanel" data-mid="${f.id}"></div></div>`).join(''):`<div class="card mut">${ME.prof?'Du är inte kallad till några matcher just nu.':'Inga kommande matcher just nu.'}</div>`}`};
+// ===================== SKJUTS TILL MATCHER (uppdatering 49)
+const RD={ok:false,places:[],rides:[],books:[],choices:[],plans:{},loaded:false,req:{},noVenue:{}};
+const TZS='Europe/Stockholm';
+const skHm=ms=>new Intl.DateTimeFormat('sv-SE',{timeZone:TZS,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(ms));
+function skIso(date,hhmm){const[y,m,d]=date.split('-').map(Number),[h,mi]=hhmm.split(':').map(Number),g=Date.UTC(y,m-1,d,h,mi);
+const off=t=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:TZS,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(new Date(t)).reduce((a,x)=>(a[x.type]=x.value,a),{});return Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second)-t};
+let ms=g-off(g);ms=g-off(ms);return new Date(ms).toISOString()}
+const skFx=m=>FIX.find(f=>f.id==m);
+const skKick=f=>f&&f.dt&&f.dt.length>10?skIso(f.dt.slice(0,10),f.dt.slice(11,16)):null;
+const skPid=()=>ME.prof?ME.prof.player_id:null;
+const skName=id=>((P.find(x=>x.id==id)||{}).name||'Spelare'),skFirst=id=>skName(id).split(' ')[0];
+const skChoice=m=>{const c=RD.choices.find(x=>x.match_id==m&&x.player_id==skPid());return c?c.choice:null};
+const skMyRide=m=>RD.rides.find(r=>r.match_id==m&&r.driver_player_id==skPid());
+const skMyBook=m=>RD.books.find(b=>b.match_id==m&&b.player_id==skPid());
+const skBooks=id=>RD.books.filter(b=>b.ride_id==id);
+const skLeft=r=>r.seats-skBooks(r.id).length;
+const skDefPlace=()=>RD.places.find(p=>p.is_default)||RD.places[0]||null;
+async function loadRides(){
+if(!ME.user){Object.assign(RD,{ok:false,places:[],rides:[],books:[],choices:[],plans:{},loaded:true});return}
+try{const[a,b,c,d,e]=await Promise.all([sb.from('pickup_places').select('*').order('id'),sb.from('rides').select('*'),sb.from('ride_bookings').select('*'),sb.from('ride_choices').select('*'),sb.from('ride_plan').select('*')]);
+RD.ok=!b.error&&!d.error;if(!a.error)RD.places=a.data||[];if(!b.error)RD.rides=b.data||[];if(!c.error)RD.books=c.data||[];if(!d.error)RD.choices=d.data||[];
+if(!e.error){RD.plans={};(e.data||[]).forEach(x=>{RD.plans[x.ride_id]=x.plan})}}catch(x){console.warn('skjuts',x);RD.ok=false}RD.loaded=true}
+async function skReload(){await loadRides();renderCallPanels();if(/^#\/konto/.test(location.hash))route()}
+// räknar om tider på servern (och skickar väntande notiser), laddar sedan om
+function skPlan(rideId,ask){return api('/api/ride',{action:'plan',ride_id:rideId||0}).then(r=>{if(rideId){if(r&&r.needVenue){RD.noVenue[rideId]=1;if(ask)skVenueAsk(rideId)}else delete RD.noVenue[rideId]}return skReload()}).catch(()=>skReload())}
+function skPlanReq(id){const n=Date.now();if(RD.req[id]&&n-RD.req[id]<60000)return;RD.req[id]=n;skPlan(id)}
+// ---- kort i kallelsen
+function skTl(ride,ctrl){const bks=skBooks(ride.id);if(!bks.length)return'<div class="mut" style="font-size:.82rem;margin:8px 0 2px">Inga passagerare ännu.</div>';
+const plan=RD.plans[ride.id];if(!plan){if(RD.noVenue[ride.id])return ctrl?`<div class="sk-warn">📍 Matchplatsen saknas, så vi kan inte räkna ut tider än.</div><button class="chip on" style="margin-top:6px" data-me="sk_venue" data-mv="${ride.id}">Ange matchplats</button>`:'<div class="mut" style="font-size:.82rem;margin:8px 0 2px">Tiderna visas när matchplatsen har angetts.</div>';skPlanReq(ride.id);return'<div class="mut" style="font-size:.82rem;margin:8px 0 2px">Räknar ut tider…</div>'}
+const f=skFx(ride.match_id),me=skPid(),dep=ride.departed_at?Date.parse(ride.departed_at):Date.parse(ride.depart_at),bk=id=>bks.find(b=>b.player_id==id),
+row=(cls,tm,sm,nm,sub,x)=>`<div class="sk-s"><div class="sk-d ${cls}">${/dn|fin/.test(cls)?(/fin/.test(cls)?'🏁':'✓'):''}</div><div class="sk-tm">${tm}<small>${sm}</small></div><div class="sk-nm">${nm}<small>${sub}</small></div>${x||''}</div>`;
+let h='<div class="sk-tl">'+row('dn',skHm(dep),ride.departed_at?'åkte':'avgång',esc(skFirst(ride.driver_player_id))+' åker hemifrån',esc(ride.start_label),'');
+(plan.picked||[]).forEach(id=>{const b=bk(id);if(!b)return;h+=row('dn'+(id==me?' me':''),b.picked_at?skHm(Date.parse(b.picked_at)):'✓','hämtad',esc(id==me?'Du – '+skFirst(id):skName(id)),esc(b.place_label),ctrl?`<button class="sk-hb d" data-me="sk_picked" data-mv="${id}" data-mm="${ride.id}">✓</button>`:'')});
+plan.stops.forEach(s=>{const b=bk(s.player_id);if(!b)return;const mine=s.player_id==me;h+=row(mine?'me':'',skHm(Date.parse(s.eta)),'ca',esc(mine?'Du – '+skFirst(s.player_id):skName(s.player_id)),esc(b.place_address&&b.place_address!=b.place_label?b.place_label+' · '+b.place_address:b.place_label),ctrl&&ride.departed_at?`<button class="sk-hb" data-me="sk_picked" data-mv="${s.player_id}" data-mm="${ride.id}">Hämtad</button>`:'')});
+const k=skKick(f),arr=Date.parse(plan.arrive),min=k?Math.round((Date.parse(k)-arr)/60000):null;
+h+=row('fin',skHm(arr),'ca','Framme'+(f&&f.venue?' · '+esc(f.venue):''),min==null?'':(min>=0?min+' min före avspark':Math.abs(min)+' min efter avspark'),'')+'</div>';
+if(plan.source=='estimate')h+='<div class="mut" style="font-size:.72rem;margin-top:4px">Tiderna är grova uppskattningar (kartan svarade inte).</div>';
+if(ctrl&&min!=null&&min<10)h+=`<div class="sk-warn">⚠️ Ni är framme ca ${skHm(arr)} – ${min>=0?min+' min före':Math.abs(min)+' min efter'} avspark. Åk gärna tidigare.</div>`;
+return h}
+function skCarBlock(ride){const bks=skBooks(ride.id),f=skFx(ride.match_id);
+let h=`<div class="sk-h">🚗 Du kör · ${bks.length} av ${ride.seats} platser bokade</div><div class="mut" style="font-size:.82rem">${ride.departed_at?'Du åkte '+skHm(Date.parse(ride.departed_at)):'Planerad avgång '+skHm(Date.parse(ride.depart_at))} från ${esc(ride.start_label)}${ride.comment?' · '+esc(ride.comment):''}</div>`;
+h+=skTl(ride,true);
+if(!ride.departed_at)h+=`<button class="sk-big" data-me="sk_depart" data-mv="${ride.id}" data-mm="${ride.match_id}">🚗 Jag åker nu<small>${bks.length?'Skickar notis till '+bks.length+' passagerare och räknar om tiderna':'Tryck när du åker hemifrån'}</small></button><div class="row" style="gap:6px;margin-top:6px"><button class="chip" data-me="sk_open" data-mv="car" data-mm="${ride.match_id}">Ändra bilen</button></div>`;
+else if(Date.now()-Date.parse(ride.departed_at)<180000)h+=`<div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-me="sk_undo" data-mv="${ride.id}" data-mm="${ride.match_id}">Ångra "Jag åker nu"</button></div>`;
+return h}
+function skNeedBlock(mid,bk){if(bk){const ride=RD.rides.find(r=>r.id==bk.ride_id);if(ride){return`<div class="sk-h">🙋 Skjuts hos ${esc(skFirst(ride.driver_player_id))}</div><div class="mut" style="font-size:.82rem">${ride.departed_at?'Bilen åkte '+skHm(Date.parse(ride.departed_at)):'Bilen åker '+skHm(Date.parse(ride.depart_at))} · du hämtas: ${esc(bk.place_label)} (${esc(bk.place_address)})</div>${skTl(ride,false)}<div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap">${ride.departed_at?'':`<button class="chip" data-me="sk_open" data-mv="pick" data-mm="${mid}" data-mr="${ride.id}">Byt upphämtningsplats</button><button class="chip" data-me="sk_unbook" data-mm="${mid}" data-mv="${ride.id}">Avboka min plats</button>`}</div>`}}
+return`<div class="sk-h" style="color:var(--red)">🙋 Du behöver skjuts – inte bokat än</div><button class="chip on" data-me="sk_open" data-mv="need" data-mm="${mid}" style="margin-top:6px">Välj bil</button> <button class="chip" data-me="sk_open" data-mv="choose" data-mm="${mid}" style="margin-top:6px">Ändra</button>`}
+function skBlock(mid,st){if(!RD.ok||!ME.prof||st!='yes')return'';const ch=skChoice(mid),ride=skMyRide(mid),bk=skMyBook(mid);let h='<div class="sk-box">';
+if(ch=='car'&&ride)h+=skCarBlock(ride);else if(ch=='need')h+=skNeedBlock(mid,bk);
+else if(ch=='self')h+=`<div class="sk-h">🚶 Du löser transporten själv</div><button class="chip" data-me="sk_open" data-mv="choose" data-mm="${mid}" style="margin-top:6px">Ändra</button>`;
+else h+=`<div class="sk-h">🚗 Transport till matchen</div><div class="mut" style="font-size:.82rem;margin-bottom:6px">Hur tar du dig dit?</div><button class="chip on" data-me="sk_open" data-mv="choose" data-mm="${mid}">Ordna transport</button>`;
+return h+'</div>'}
+// översikt för alla inloggade: bilar, vilka som åker med och var de hämtas
+function skOverview(mid){if(!RD.ok||!ME.user)return'';const rides=RD.rides.filter(r=>r.match_id==mid),ch=RD.choices.filter(c=>c.match_id==mid);if(!rides.length&&!ch.length)return'';
+const me=skPid(),st=(ME.calls.find(c=>c.match_id==mid&&c.player_id==me)||{}).status,myb=skMyBook(mid),mych=skChoice(mid);
+let h='<div class="sk-ov"><b style="font-size:.82rem">🚗 Transport</b>';
+rides.forEach(r=>{const bks=skBooks(r.id),left=skLeft(r),mine=r.driver_player_id==me,booked=myb&&myb.ride_id==r.id;
+const can=ME.prof&&st=='yes'&&!mine&&!r.departed_at&&!booked&&left>0&&mych!='car';
+h+=`<div class="sk-car${booked?' on':''}"><div class="sk-ct"><div><b>${esc(skName(r.driver_player_id))}${mine?' (du)':''}</b><div class="mut" style="font-size:.76rem">${r.departed_at?'Åkte '+skHm(Date.parse(r.departed_at)):'Avgår '+skHm(Date.parse(r.depart_at))} · ${esc(r.start_label)}${r.comment?' · '+esc(r.comment):''}</div></div>${booked?'<span class="sk-ok">✓ Bokad</span>':can?`<button class="chip on" style="padding:6px 12px;font-size:.8rem" data-me="sk_open" data-mv="pick" data-mm="${mid}" data-mr="${r.id}">Boka plats</button>`:left<1?'<span class="sk-full">Full</span>':''}</div>
+<div class="sk-pas">${bks.map(b=>`<span>${esc(skFirst(b.player_id))} <small>${esc(b.place_label)}${b.place_address&&b.place_address!=b.place_label?' · '+esc(b.place_address):''}</small></span>`).join('')}${Array.from({length:Math.max(0,left)},()=>'<span class="em">Ledig plats</span>').join('')}</div></div>`});
+const need=ch.filter(c=>c.choice=='need'&&!RD.books.some(b=>b.match_id==mid&&b.player_id==c.player_id)),selfs=ch.filter(c=>c.choice=='self');
+if(need.length)h+=`<div style="font-size:.84rem;margin-top:8px">🙋 <b>Behöver skjuts (ej bokat):</b> ${need.map(c=>esc(skFirst(c.player_id))).join(', ')}</div>`;
+if(selfs.length)h+=`<div style="font-size:.84rem;margin-top:4px">🚶 <b>Löser själva:</b> ${selfs.map(c=>esc(skFirst(c.player_id))).join(', ')}</div>`;
+return h+'</div>'}
+// ---- bottenark
+let RS=null;
+const skKindEmoji={hem:'🏠',station:'🚇',jobb:'💼',annan:'📍'};
+function skClose(){RS=null;const e=document.getElementById('rsh');if(e)e.remove();document.body.classList.remove('sk-lock')}
+function skCapture(){if(!RS)return;const g=id=>{const e=document.getElementById(id);return e?e.value:null};
+const t=g('sk-time');if(t!=null)RS.time=t;const c=g('sk-cmt');if(c!=null)RS.comment=c;const l=g('sk-label');if(l!=null)RS.label=l;const q=g('sk-q');if(q!=null)RS.q=q}
+function skOpen(m,mode,ride){const f=skFx(m),ex=m?skMyRide(m):null,k=f&&f.dt&&f.dt.length>10?f.dt.slice(11,16):'19:30';
+const dep=(()=>{let[h,mi]=k.split(':').map(Number),t=h*60+mi-70;if(t<0)t+=1440;return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')})();
+RS={m,mode,ride:ride||null,seats:ex?ex.seats:3,time:ex?skHm(Date.parse(ex.depart_at)):dep,comment:ex?ex.comment:'',start:null,place:null,err:'',busy:false,q:'',sugs:[],sel:null,label:'',kind:'hem',ret:null,edit:null};
+if(ex){const sp=RD.places.find(p=>p.address==ex.start_address);RS.start=sp?sp.id:'custom';RS.startCustom={label:ex.start_label,address:ex.start_address,lat:ex.start_lat,lng:ex.start_lng}}
+else{const d=skDefPlace();RS.start=d?d.id:null}
+const d=skDefPlace();RS.place=d?d.id:null;
+if(mode=='pick'&&ride){const b=skMyBook(m);if(b){const pp=RD.places.find(p=>p.address==b.place_address);if(pp)RS.place=pp.id}}
+if(mode=='addplace'&&!m){RS.ret='close'}
+skRender()}
+function skRender(){skCapture();const el0=document.getElementById('rsh');if(!RS){if(el0)el0.remove();return}
+if(!el0){document.body.insertAdjacentHTML('beforeend','<div id="rsh"><div class="sk-dim" data-me="sk_close"></div><div class="sk-sheet"></div></div>');document.body.classList.add('sk-lock')}
+const sh=document.querySelector('#rsh .sk-sheet');sh.innerHTML='<div class="sk-hn"></div>'+skBody()+(RS.err?`<div class="sk-err">⚠️ ${esc(RS.err)}</div>`:'');}
+function skPlaceList(sel,act,withAdd){const ps=RD.places;return(ps.length?ps.map(p=>`<div class="sk-pl${sel==p.id?' on':''}" data-me="${act}" data-mv="${p.id}"><div class="e">${skKindEmoji[p.kind]||'📍'}</div><div><b>${esc(p.label)}</b><small>${esc(p.address)}</small></div></div>`).join(''):'<div class="mut" style="font-size:.84rem;margin-bottom:8px">Du har inga sparade platser än.</div>')+(withAdd?`<div class="sk-add" data-me="sk_addplace">＋ ${ps.length?'Ny plats':'Lägg till adress'}</div>`:'')}
+function skBody(){const m=RS.m,f=skFx(m),when=f?`${esc(f.d)}${f.dt&&f.dt.length>10?' kl '+f.dt.slice(11,16):''}${f.venue?' · '+esc(f.venue):''}`:'';
+if(RS.mode=='choose'){const ch=skChoice(m);return`<h3>Hur tar du dig till matchen?</h3><div class="s">${when}</div>
+<div class="sk-op${ch=='self'?' on':''}" data-me="sk_choose" data-mv="self"><div class="e">🚶</div><div><b>Jag löser det själv</b><small>Cykel, kollektivt eller egen väg</small></div></div>
+<div class="sk-op${ch=='car'?' on':''}" data-me="sk_choose" data-mv="car"><div class="e">🚗</div><div><b>Jag har bil</b><small>Erbjud lediga platser till laget</small></div></div>
+<div class="sk-op${ch=='need'?' on':''}" data-me="sk_choose" data-mv="need"><div class="e">🙋</div><div><b>Jag behöver skjuts</b><small>Boka plats i en bil från laget</small></div></div>
+<div class="sk-skip" data-me="sk_close">${ch?'Stäng':'Hoppa över'}</div>`}
+if(RS.mode=='car'){const ex=skMyRide(m),bk=ex?skBooks(ex.id).length:0;return`<h3>Du har bil 🚗</h3><div class="s">Berätta hur många som får plats – lagkompisar kan boka in sig.</div>
+<div class="sk-lbl">Lediga platser (förutom dig)</div><div class="sk-stp"><b data-me="sk_seat" data-mv="-1">−</b><div class="n">${RS.seats}</div><b data-me="sk_seat" data-mv="1">+</b></div><div class="sk-seats">${Array.from({length:8},(_,i)=>`<i class="${i<RS.seats?'f':''}"></i>`).join('')}</div>${bk?`<div class="mut" style="font-size:.76rem;text-align:center;margin-top:4px">${bk} redan bokade</div>`:''}
+<div class="sk-lbl">Avgång</div><div class="sk-inp"><small>Tid (svensk tid)</small><input id="sk-time" type="time" value="${esc(RS.time)}"></div>
+<div class="sk-lbl">Var åker du ifrån?</div>${skPlaceList(RS.start,'sk_start',true)}${RS.start=='custom'&&RS.startCustom?`<div class="sk-pl on"><div class="e">📍</div><div><b>${esc(RS.startCustom.label)}</b><small>${esc(RS.startCustom.address)}</small></div></div>`:''}
+<div class="sk-inp"><small>Kommentar (valfritt)</small><input id="sk-cmt" maxlength="120" placeholder="T.ex. plockar upp vid tunnelbanan" value="${esc(RS.comment)}"></div>
+<div class="sk-go y" data-me="sk_savecar">${RS.busy?'Sparar…':ex?'Spara ändringar':'Spara – erbjud '+RS.seats+(RS.seats==1?' plats':' platser')}</div>${ex?'<div class="sk-skip" style="color:#b3261e" data-me="sk_cancelcar">Ställ in min bil</div>':'<div class="sk-skip" data-me="sk_back">Tillbaka</div>'}`}
+if(RS.mode=='need'){const cars=RD.rides.filter(r=>r.match_id==m&&r.driver_player_id!=skPid());return`<h3>Du behöver skjuts 🙋</h3><div class="s">Välj en bil med lediga platser.</div>${cars.length?cars.map(r=>{const bks=skBooks(r.id),left=skLeft(r),full=left<1||r.departed_at;return`<div class="sk-car${full?' full':''}"><div class="sk-ct"><div><b>${esc(skName(r.driver_player_id))}</b><div class="mut" style="font-size:.76rem">${r.departed_at?'Har åkt':'Avgår '+skHm(Date.parse(r.depart_at))} · ${esc(r.start_label)}</div></div>${full?`<span class="sk-full">${r.departed_at?'Åkt':'Full'}</span>`:`<button class="chip on" style="padding:7px 13px;font-size:.82rem" data-me="sk_pickride" data-mv="${r.id}">Boka plats</button>`}</div><div class="mut" style="font-size:.76rem;margin:6px 0 4px">${bks.length} av ${r.seats} platser bokade</div><div class="sk-pas">${bks.map(b=>`<span>${esc(skFirst(b.player_id))}</span>`).join('')}${Array.from({length:Math.max(0,left)},()=>'<span class="em">Ledig</span>').join('')}</div></div>`}).join(''):'<div class="card mut" style="font-size:.86rem">Ingen har lagt upp en bil än. Du får en notis när någon bokar eller lägger upp en bil – du kan också komma tillbaka hit senare.</div>'}
+<div class="sk-skip" data-me="sk_choose" data-mv="self">Ingen skjuts passar – jag löser det själv</div><div class="sk-skip" data-me="sk_back">Tillbaka</div>`}
+if(RS.mode=='pick'){const r=RD.rides.find(x=>x.id==RS.ride);if(!r)return'<h3>Bilen finns inte längre</h3><div class="sk-skip" data-me="sk_close">Stäng</div>';return`<h3>Boka plats hos ${esc(skFirst(r.driver_player_id))}</h3><div class="s">Avgår ${skHm(Date.parse(r.depart_at))} · ${esc(r.start_label)} · ${skLeft(r)} lediga platser</div>
+<div class="sk-lbl">Var ska du hämtas?</div>${skPlaceList(RS.place,'sk_plc',true)}<div class="sk-note">Alla i bilen ser var du hämtas. Du får din preliminära tid direkt efter bokningen.</div>
+<div class="sk-go y" data-me="sk_book">${RS.busy?'Bokar…':'Boka plats'}</div><div class="sk-skip" data-me="sk_back">Tillbaka</div>`}
+if(RS.mode=='addplace'){return`<h3>${RS.edit?'Ändra plats':'Ny plats'}</h3><div class="s">Adressen används bara för att räkna ut tider. Bara du och föraren du bokar ser den.</div>
+<div class="sk-lbl">Namn</div><div class="sk-inp"><input id="sk-label" maxlength="40" placeholder="T.ex. Hemma, Jobbet, Vällingby T-bana" value="${esc(RS.label)}"></div>
+<div class="sk-lbl">Typ</div><div class="sk-chp">${[['hem','🏠 Hem'],['station','🚇 Station'],['jobb','💼 Jobb'],['annan','📍 Annan']].map(([k,l])=>`<span class="${RS.kind==k?'on':''}" data-me="sk_kind" data-mv="${k}">${l}</span>`).join('')}</div>
+<div class="sk-lbl">Adress eller plats</div><div class="sk-inp"><small>Sök</small><input id="sk-q" autocomplete="off" placeholder="Gatuadress, station eller plats" value="${esc(RS.q)}"></div><div id="sk-sug">${skSugH()}</div>
+${RS.sel?`<div class="sk-selp">📍 ${esc(RS.sel.address)}</div>`:''}
+<div class="sk-go y" data-me="sk_savepl">${RS.busy?'Sparar…':'Spara plats'}</div><div class="sk-skip" data-me="sk_back">Avbryt</div>`}
+if(RS.mode=='venue'){return`<h3>Var spelas matchen? 📍</h3><div class="s">Vi hittade inte platsen automatiskt. Sök adressen så kan vi räkna ut körtiderna.${f&&f.venue?' ('+esc(f.venue)+')':''}</div>
+<div class="sk-inp"><small>Sök</small><input id="sk-q" autocomplete="off" placeholder="Adress eller plats" value="${esc(RS.q)}"></div><div id="sk-sug">${skSugH()}</div>${RS.sel?`<div class="sk-selp">📍 ${esc(RS.sel.address)}</div>`:''}
+<div class="sk-go y" data-me="sk_savevenue">${RS.busy?'Sparar…':'Spara matchplats'}</div><div class="sk-skip" data-me="sk_close">Senare</div>`}
+return''}
+const skSugH=()=>RS&&RS.sugs&&RS.sugs.length?`<div class="sk-sug">${RS.sugs.map((s,i)=>`<div data-me="sk_sug" data-mv="${i}">📍 ${esc(s.address)}</div>`).join('')}</div>`:(RS&&RS.q&&RS.q.length>=3&&RS.searched?'<div class="mut" style="font-size:.8rem;margin:2px 2px 8px">Inga träffar – prova med stad, t.ex. "Storgatan 1, Bromma".</div>':'');
+let _skT=null;
+async function skGeo(q){const u='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=se&accept-language=sv&viewbox=17.4,59.1,18.6,59.7&q='+encodeURIComponent(q);const r=await fetch(u,{headers:{Accept:'application/json'}});if(!r.ok)throw new Error('Adressökningen svarade inte');return(await r.json()).map(x=>({address:String(x.display_name||'').split(',').slice(0,3).join(',').trim(),lat:+x.lat,lng:+x.lon}))}
+document.addEventListener('input',e=>{if(!RS||!e.target||e.target.id!='sk-q')return;RS.q=e.target.value;RS.sel=null;clearTimeout(_skT);if(RS.q.trim().length<3){RS.sugs=[];RS.searched=false;const s=document.getElementById('sk-sug');if(s)s.innerHTML='';return}
+_skT=setTimeout(async()=>{const q=RS&&RS.q.trim();if(!q)return;try{const r=await skGeo(q);if(!RS||RS.q.trim()!=q)return;RS.sugs=r;RS.searched=true;const s=document.getElementById('sk-sug');if(s)s.innerHTML=skSugH()}catch(er){if(RS){RS.err=er.message;skRender()}}},550)});
+const skErr=e=>String((e&&(e.message||e.error))||e);
+async function skAct(a,v,m,el){
+const r=el&&el.dataset?el.dataset.mr:null;
+try{
+if(a=='sk_close'){skClose();return}
+if(a=='sk_open'){skOpen(+m,v,r?+r:null);if(v=='need'||v=='pick'||v=='car'||v=='choose'){}return}
+if(a=='sk_back'){const mm=RS&&RS.m;if(RS&&RS.ret=='close'){skClose();return}if(RS&&RS.ret){const mode=RS.ret;RS.ret=null;RS.mode=mode;RS.err='';skRender();return}if(mm)skOpen(mm,'choose');else skClose();return}
+if(a=='sk_choose'){const mm=RS?RS.m:+m;if(v=='car'){skOpen(mm,'car');return}if(v=='need'){skOpen(mm,'need');return}
+const ride=skMyRide(mm);if(ride&&skBooks(ride.id).length&&!confirm('Din bil har '+skBooks(ride.id).length+' bokade passagerare. Ställ in bilen?'))return;
+const bk=skMyBook(mm);if(bk&&!confirm('Din bokning avbokas. Fortsätt?'))return;
+const x=await sb.rpc('set_ride_choice',{p_match:mm,p_choice:'self'});if(x.error)throw x.error;skClose();await skReload();api('/api/ride',{action:'plan',ride_id:0}).catch(()=>{});return}
+if(a=='sk_seat'){skCapture();RS.seats=Math.min(8,Math.max(1,RS.seats+(+v)));skRender();return}
+if(a=='sk_start'){skCapture();RS.start=+v;skRender();return}
+if(a=='sk_plc'){skCapture();RS.place=+v;skRender();return}
+if(a=='sk_addplace'){skCapture();const keep=RS;RS={...keep,ret:keep.mode,mode:'addplace',q:'',sugs:[],sel:null,label:'',kind:RD.places.length?'annan':'hem',edit:null,err:''};skRender();return}
+if(a=='sk_kind'){skCapture();RS.kind=v;skRender();return}
+if(a=='sk_sug'){skCapture();RS.sel=RS.sugs[+v];RS.q=RS.sel.address;RS.sugs=[];if(!RS.label&&RS.mode=='addplace')RS.label=({hem:'Hemma',station:'Station',jobb:'Jobbet',annan:''})[RS.kind]||'';skRender();return}
+if(a=='sk_savepl'){skCapture();if(!RS.label.trim())throw new Error('Ge platsen ett namn');
+const sel=RS.sel||null;if(!sel&&!RS.edit)throw new Error('Välj en adress i listan med träffar');if(!sel&&RS.edit){const op=RD.places.find(x=>x.id==RS.edit);if(op&&RS.q.trim()!=op.address)throw new Error('Välj en adress i listan med träffar')}
+RS.busy=true;skRender();let id;
+if(RS.edit){const up={label:RS.label.trim(),kind:RS.kind};if(sel){up.address=sel.address;up.lat=sel.lat;up.lng=sel.lng}const x=await sb.from('pickup_places').update(up).eq('id',RS.edit);if(x.error)throw x.error;id=RS.edit}
+else{const x=await sb.from('pickup_places').insert({user_id:ME.user.id,label:RS.label.trim(),kind:RS.kind,address:sel.address,lat:sel.lat,lng:sel.lng,is_default:!RD.places.length}).select().single();if(x.error)throw x.error;id=x.data.id}
+await loadRides();RS.busy=false;if(RS.ret=='close'||!RS.ret){skClose();renderCallPanels();if(/^#\/konto/.test(location.hash))route();return}
+const mode=RS.ret;RS.ret=null;RS.mode=mode;if(mode=='car')RS.start=id;else RS.place=id;RS.err='';skRender();return}
+if(a=='sk_savecar'){skCapture();const f=skFx(RS.m);if(!f||!f.dt||f.dt.length<=10)throw new Error('Matchen saknar avsparkstid – be lagledaren lägga in den');
+if(!/^\d\d:\d\d$/.test(RS.time))throw new Error('Välj avgångstid');const depIso=skIso(f.dt.slice(0,10),RS.time);if(Date.parse(depIso)>=Date.parse(skKick(f)))throw new Error('Avgången måste vara före avspark');
+let st=null;if(RS.start=='custom')st=RS.startCustom;else st=RD.places.find(p=>p.id==RS.start);if(!st)throw new Error('Välj var du åker ifrån (lägg till en adress)');
+RS.busy=true;skRender();
+const x=await sb.rpc('save_ride',{p_match:RS.m,p_seats:RS.seats,p_depart:depIso,p_label:st.label,p_address:st.address,p_lat:st.lat,p_lng:st.lng,p_comment:RS.comment||''});if(x.error)throw x.error;
+const rid=x.data;skClose();await skReload();skPlan(rid,true);return}
+if(a=='sk_cancelcar'){const ride=skMyRide(RS.m);const n=ride?skBooks(ride.id).length:0;if(!confirm(n?'Din bil har '+n+' bokade passagerare som får besked. Ställ in bilen?':'Ställ in din bil?'))return;
+const x=await sb.rpc('set_ride_choice',{p_match:RS.m,p_choice:'self'});if(x.error)throw x.error;skClose();await skReload();api('/api/ride',{action:'plan',ride_id:0}).catch(()=>{});return}
+if(a=='sk_pickride'){skOpen(RS.m,'pick',+v);return}
+if(a=='sk_book'){const pl=RD.places.find(p=>p.id==RS.place);if(!pl)throw new Error('Välj upphämtningsplats (eller lägg till en)');RS.busy=true;skRender();
+const x=await sb.rpc('book_ride',{p_ride:RS.ride,p_label:pl.label,p_address:pl.address,p_lat:pl.lat,p_lng:pl.lng});if(x.error)throw x.error;const rid=RS.ride;skClose();await skReload();skPlan(rid,true);return}
+if(a=='sk_unbook'){if(!confirm('Avboka din plats i bilen?'))return;const x=await sb.rpc('cancel_booking',{p_match:+m});if(x.error)throw x.error;await skReload();api('/api/ride',{action:'plan',ride_id:+v}).catch(()=>{}).then(skReload);return}
+if(a=='sk_depart'){const x=await api('/api/ride',{action:'depart',ride_id:+v});if(x.needVenue){RD.noVenue[+v]=1;skVenueAsk(+v);return}await skReload();return}
+if(a=='sk_venue'){skVenueAsk(+v);return}
+if(a=='sk_picked'){await api('/api/ride',{action:'picked',ride_id:+m,player_id:+v});await skReload();return}
+if(a=='sk_undo'){await api('/api/ride',{action:'undo',ride_id:+v});await skReload();return}
+if(a=='sk_savevenue'){if(!RS.sel)throw new Error('Välj en träff i listan');RS.busy=true;skRender();const x=await sb.rpc('set_fixture_place',{p_match:RS.m,p_lat:RS.sel.lat,p_lng:RS.sel.lng});if(x.error)throw x.error;const rid=RS.ride;skClose();if(rid){delete RD.noVenue[rid];skPlan(rid)}return}
+// profil: platser
+if(a=='sk_pnew'){skOpen(null,'addplace');RS.ret='close';skRender();return}
+if(a=='sk_pedit'){const p=RD.places.find(x=>x.id==+v);if(!p)return;skOpen(null,'addplace');RS.ret='close';RS.edit=p.id;RS.label=p.label;RS.kind=p.kind;RS.q=p.address;skRender();return}
+if(a=='sk_pdef'){const x1=await sb.from('pickup_places').update({is_default:false}).eq('user_id',ME.user.id);if(x1.error)throw x1.error;const x2=await sb.from('pickup_places').update({is_default:true}).eq('id',+v);if(x2.error)throw x2.error;await skReload();return}
+if(a=='sk_pdel'){const p=RD.places.find(x=>x.id==+v);if(!p||!confirm('Ta bort "'+p.label+'"?'))return;const x=await sb.from('pickup_places').delete().eq('id',p.id);if(x.error)throw x.error;if(p.is_default){const rest=RD.places.filter(y=>y.id!=p.id)[0];if(rest)await sb.from('pickup_places').update({is_default:true}).eq('id',rest.id)}await skReload();return}
+}catch(e){const msg=skErr(e);if(RS){RS.busy=false;RS.err=msg;skRender()}else{ME.msg='⚠️ '+msg;rerenderMe()}}}
+function skVenueAsk(rideId){const r=rideId?RD.rides.find(x=>x.id==rideId):null;const m=r?r.match_id:(RS?RS.m:null);if(!m)return;skOpen(m,'venue');RS.ride=rideId||null;skRender()}
+// profilsidan: sparade platser
+function skPlacesH(){if(!ME.user||!ME.prof||!RD.ok)return'';
+return`<h2>Upphämtningsplatser</h2><div class="card"><div class="mut" style="font-size:.82rem;margin-bottom:8px">Spara de ställen där du kan bli upphämtad (hemma, tunnelbanestation m.m.). Bara du ser dina sparade platser – föraren och bilen du bokar ser den plats du väljer för just den matchen.</div>${RD.places.length?RD.places.map(p=>`<div class="sk-pl${p.is_default?' on':''}"><div class="e">${skKindEmoji[p.kind]||'📍'}</div><div style="flex:1;min-width:0"><b>${esc(p.label)}</b><small>${esc(p.address)}</small><div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap">${p.is_default?'<span class="sk-std">Standard</span>':`<button class="chip" style="padding:4px 10px;font-size:.76rem" data-me="sk_pdef" data-mv="${p.id}">Gör till standard</button>`}<button class="chip" style="padding:4px 10px;font-size:.76rem" data-me="sk_pedit" data-mv="${p.id}">Ändra</button><button class="chip" style="padding:4px 10px;font-size:.76rem;color:#b3261e" data-me="sk_pdel" data-mv="${p.id}">Ta bort</button></div></div></div>`).join(''):'<div class="mut" style="font-size:.84rem;margin-bottom:8px">Inga platser sparade än.</div>'}<div class="sk-add" data-me="sk_pnew">＋ Lägg till plats</div></div>`}
+// ===================== SLUT SKJUTS
+
 // ---- kallelsepanel (svar + lagledarvy)
 const callName=c=>c.player_id?((P.find(x=>x.id==c.player_id)||{}).name||'Spelare'):c.guest_name;
 function callPanelH(mid){const cs=ME.calls.filter(c=>c.match_id==mid),mine=ME.prof&&cs.find(c=>c.player_id==ME.prof.player_id),st=mine?mine.status:null,pend=CUI[mid],sel=pend?pend.status:st;let h='';
 if(ME.prof){h+=`<div style="margin-top:10px"><div class="mut" style="font-size:.8rem;margin-bottom:6px">${mine?(st?'Ditt svar: <b>'+CSTAT[st][0]+' '+CSTAT[st][1]+'</b>'+(mine.comment?' – '+esc(mine.comment):''):'<b style="color:var(--red)">Du har inte svarat än.</b>'):'Du är inte kallad till den här matchen.'}</div>${mine?`<div class="row" style="gap:6px;flex-wrap:wrap">${Object.entries(CSTAT).map(([k,[e,l]])=>`<button class="chip callb ${sel==k?'on':''}" data-me="callsel" data-mm="${mid}" data-mv="${k}">${e} ${l}</button>`).join('')}</div>`:''}`;
 if(mine&&sel&&sel!='yes'){const cm=pend?pend.comment:(mine&&mine.comment)||'';h+=`<div class="adm" style="margin-top:8px"><div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:6px">${REASONS.map(r=>`<button class="chip" data-me="reason" data-mm="${mid}" data-mv="${r}" style="padding:5px 10px;font-size:.8rem">${r}</button>`).join('')}</div><input id="cmt-${mid}" maxlength="200" placeholder="Kommentar (t.ex. skadad, jobbar, egen text)" value="${esc(cm)}"><button class="chip on" data-me="callsave" data-mm="${mid}">${st==sel?'Spara kommentar':'Spara svar'}</button></div>`}
 h+='</div>'}
+h+=skBlock(mid,st);
 const grp=(k,t)=>{const L=cs.filter(c=>(c.status||'open')==k);return L.length?`<div style="margin-top:8px"><b style="font-size:.82rem">${t} (${L.length})</b>${L.map(c=>`<div style="font-size:.86rem;padding:2px 0">${esc(callName(c))}${c.guest_name?' <span class="mut">(lånespelare)</span>':''}${c.comment?` <span class="mut">– ${esc(c.comment)}</span>`:''}</div>`).join('')}</div>`:''};
 const n=k=>cs.filter(c=>(c.status||'open')==k).length;
-h+=`<div style="margin-top:12px;border-top:1px solid var(--bd);padding-top:8px"><div class="mut" style="font-size:.8rem">${cs.length?`${n('yes')} kommer · ${n('maybe')} avvaktar · ${n('no')} kommer inte · ${n('open')} ej svarat`:'Inga kallelser skapade för den här matchen ännu.'}</div>${grp('yes','✅ Kommer')}${grp('maybe','🤔 Avvaktar')}${grp('no','❌ Kommer inte')}${grp('open','⏳ Ej svarat')}</div>`;return h}
+h+=`<div style="margin-top:12px;border-top:1px solid var(--bd);padding-top:8px"><div class="mut" style="font-size:.8rem">${cs.length?`${n('yes')} kommer · ${n('maybe')} avvaktar · ${n('no')} kommer inte · ${n('open')} ej svarat`:'Inga kallelser skapade för den här matchen ännu.'}</div>${grp('yes','✅ Kommer')}${grp('maybe','🤔 Avvaktar')}${grp('no','❌ Kommer inte')}${grp('open','⏳ Ej svarat')}</div>`;h+=skOverview(mid);return h}
 function renderCallPanels(){renderHomeCal();document.querySelectorAll('.callpanel[data-mid]').forEach(el=>{el.innerHTML=ME.user&&ME.loaded?(el.closest('.card')?'':'<h2>Kallelse</h2>')+(el.closest('.card')?'':'<div class="card">')+callPanelH(el.dataset.mid)+(el.closest('.card')?'':'</div>'):''})}
-async function saveCall(mid){const pend=CUI[mid];if(!pend)return;const c=document.getElementById('cmt-'+mid);const r=await sb.rpc('respond_call',{p_match_id:+mid,p_status:pend.status,p_comment:pend.status=='yes'?'':(c?c.value:pend.comment)||''});if(r.error)throw r.error;delete CUI[mid];await loadCalls();rerenderMe();api('/api/call-event',{match_id:+mid}).catch(()=>{})}
-async function meAct(a,v,m,el){try{ME.msg='';
+async function saveCall(mid){const pend=CUI[mid];if(!pend)return;const wasYes=pend.status=='yes';const c=document.getElementById('cmt-'+mid);const r=await sb.rpc('respond_call',{p_match_id:+mid,p_status:pend.status,p_comment:pend.status=='yes'?'':(c?c.value:pend.comment)||''});if(r.error)throw r.error;delete CUI[mid];await loadCalls();rerenderMe();api('/api/call-event',{match_id:+mid}).catch(()=>{});if(wasYes&&RD.ok&&!skChoice(+mid))skOpen(+mid,'choose')}
+async function meAct(a,v,m,el){if(typeof a=='string'&&a.startsWith('sk_'))return skAct(a,v,m,el);try{ME.msg='';
 if(a=='login'){const r=await sb.auth.signInWithPassword({email:gv('le').trim(),password:gv('lp')});if(r.error){ME.msg='⚠️ Fel e-post eller lösenord.';return rerenderMe()}location.hash='#/kallelser';return}
 if(a=='forgot'){const e=gv('le').trim();if(!e){ME.msg='⚠️ Skriv din e-postadress först.';return rerenderMe()}const r=await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin+location.pathname});ME.msg=r.error?'⚠️ '+r.error.message:'Om adressen finns har ett mejl skickats med en länk för nytt lösenord.';return rerenderMe()}
 if(a=='logout'){pfm().hidden=true;await sb.auth.signOut();location.hash='#/';return}
@@ -1370,7 +1585,7 @@ try{new MutationObserver(()=>{const el=document.getElementById('homecal');if(el&
 app.addEventListener('click',e=>{const tm=e.target.closest('[data-team]');if(tm){e.preventDefault();location.hash='#/lag/'+encodeURIComponent(tm.dataset.team);return}const sf=e.target.closest('[data-sf]');if(sf){SF=sf.dataset.sf;const y=scrollY,p=location.hash.split('/');app.innerHTML=V.serie(p[2],p[3],1);scrollTo(0,y);return}const lr=e.target.closest('[data-lr]');if(lr){LRM=lr.dataset.lr=='1';const y=scrollY,p=location.hash.split('/');app.innerHTML=V.lagres(p[2],1);scrollTo(0,y);return}const yc=e.target.closest('[data-ytcopy]');if(yc){e.preventDefault();const tt=yc.dataset.ytcopy;navigator.clipboard.writeText(tt).then(()=>{yc.textContent='Kopierat ✓'}).catch(()=>prompt('Kopiera sökord:',tt));return}const yt=e.target.closest('[data-yt]');if(yt){const ua=navigator.userAgent,q=encodeURIComponent(yt.dataset.yt),web='https://www.youtube.com/results?search_query='+q,go=window.__go||(u=>{location.href=u});if(/iPhone|iPad|iPod/i.test(ua)){e.preventDefault();go('youtube://results?search_query='+q);setTimeout(()=>{if(!document.hidden)go(web)},900);return}if(/Android/i.test(ua)){e.preventDefault();go('intent://www.youtube.com/results?search_query='+q+'#Intent;scheme=https;package=com.google.android.youtube;S.browser_fallback_url='+encodeURIComponent(web)+';end');return}}const mt=e.target.closest('[data-mt]');if(mt){mtab=mt.dataset.mt;const y=scrollY,id=location.hash.split('/')[2];app.innerHTML=V.m(id);renderTips();scrollTo(0,y);return}const cf=e.target.closest('[data-cf]');if(cf){csf=cf.dataset.cf;const y=scrollY;app.innerHTML=V.rekord(cf.dataset.a);scrollTo(0,y);return}const bk=e.target.closest('.back');if(bk){e.preventDefault();if(history.length>1)history.back();else location.hash='#/';return}
 const sbt=e.target.closest('[data-s]');if(sbt){sk=sbt.dataset.s;const y=scrollY;app.innerHTML=V.match();scrollTo(0,y);return}
 const tt=e.target.closest('[data-tip]');if(tt){const b=tt.closest('.tipbox'),n=b.querySelector('.tn').value.trim(),A=parseInt(b.querySelector('.ta').value),B=parseInt(b.querySelector('.tb').value),nt=b.querySelector('.tipnote');if(!n||isNaN(A)||isNaN(B)||A<0||B<0||A>30||B>30){nt.textContent='Fyll i namn och båda målsiffrorna.';return}let uid=lsg('gtuid');if(!uid){uid=Math.random().toString(36).slice(2,10);lss('gtuid',uid)}lss('gtname',n);tt.disabled=true;sb.from('tips').insert({match_id:+tt.dataset.tip,uid,name:n,a:A,b:B}).then(async r=>{if(r.error){nt.textContent='Kunde inte spara tipset.'}else{nt.textContent='Tips sparat ✓';await loadTips();renderTips()}tt.disabled=false});return}
-const sh=e.target.closest('[data-share]');if(sh){const r=DB.results.find(x=>x.id==sh.dataset.share),t='Golden Tank – '+r.o+' '+r.gf+'–'+r.ga,u=window.GT_CONFIG?new URL('api/share',location.href.split('#')[0]).href+'?m='+r.id+'&t='+encodeURIComponent(t)+'&d='+encodeURIComponent('Match '+r.id+' · '+dlab2ms(resIso(r))+' · '+serFull(r.s)+' – matchhändelser, trupp och tabell'):location.href.split('#')[0]+'#/m/'+r.id;const cp=()=>navigator.clipboard.writeText(t+' '+u).then(()=>{sh.textContent='Länk kopierad ✓'}).catch(()=>prompt('Kopiera länken:',u));(navigator.share?navigator.share({title:t,text:t,url:u}).catch(x=>{if(x.name!='AbortError')cp()}):cp());return}const m=e.target.closest('[data-m]');if(m){ms=m.dataset.m;const y=scrollY;app.innerHTML=V.matcher(undefined,1);scrollTo(0,y);return}const c=e.target.closest('[data-p]');if(c){pos=c.dataset.p;const y=scrollY;app.innerHTML=V.trupp();scrollTo(0,y)}});
+const m=e.target.closest('[data-m]');if(m){ms=m.dataset.m;const y=scrollY;app.innerHTML=V.matcher(undefined,1);scrollTo(0,y);return}const c=e.target.closest('[data-p]');if(c){pos=c.dataset.p;const y=scrollY;app.innerHTML=V.trupp();scrollTo(0,y)}});
 setInterval(()=>{const c=$('#cd');if(c)c.textContent=cd()},30000);
 
 </script>
