@@ -42,6 +42,38 @@ async function motmRun(nowMs, dry, site) {
   return out;
 }
 
+// Säkerhetskopia: varje vecka (efter kl 03:00 svensk tid) sparas en JSON-fil med alla tabeller i den privata bucketen "backups" (se 36_sakerhetskopia.sql).
+const BK_TABLES = ['series', 'players', 'matches', 'match_players', 'match_events', 'fixtures', 'leagues', 'league_rows', 'seasons', 'awards', 'news', 'tips', 'youtube', 'settings', 'league_matches', 'teams', 'team_kits', 'schedule', 'cup_matches', 'shop_items', 'shop_orders', 'match_photos', 'team_aliases', 'player_profiles', 'match_calls', 'notification_preferences', 'pickup_places', 'rides', 'ride_choices', 'ride_bookings', 'motm_polls', 'match_votes', 'motm_results', 'series_players'];
+async function backupRun(nowMs, force) {
+  const ls = await L.svc('/storage/v1/object/list/backups', { method: 'POST', body: JSON.stringify({ prefix: '', limit: 200, sortBy: { column: 'name', order: 'desc' } }) });
+  if (!ls.ok) return { skipped: 'Lagringsplatsen "backups" saknas – kör 36_sakerhetskopia.sql' };
+  const files = ((ls.body || []).map((x) => x.name) || []).filter((n) => /^gt-\d{4}-\d{2}-\d{2}\.json$/.test(n)).sort().reverse();
+  const today = new Date(nowMs).toLocaleDateString('sv-SE', { timeZone: 'Europe/Stockholm' });
+  const hour = +new Date(nowMs).toLocaleString('en-GB', { timeZone: 'Europe/Stockholm', hour: '2-digit', hour12: false });
+  const lastMs = files[0] ? Date.parse(files[0].slice(3, 13) + 'T00:00:00Z') : 0;
+  const due = force || (hour >= 3 && (!files[0] || Date.parse(today + 'T00:00:00Z') - lastMs >= 7 * 86400e3));
+  if (!due) return { skipped: 'ingen kopia behövs', latest: files[0] || null };
+  const tables = {}, missing = [];
+  await Promise.all(BK_TABLES.map(async (t) => {
+    const rows = [];
+    for (let off = 0; ; off += 1000) {
+      let r = await L.svc('/rest/v1/' + t + '?select=*&order=id&limit=1000&offset=' + off);
+      if (!r.ok) r = await L.svc('/rest/v1/' + t + '?select=*&limit=1000&offset=' + off);
+      if (!r.ok) { if (!rows.length) missing.push(t); break; }
+      const b = Array.isArray(r.body) ? r.body : [];
+      rows.push(...b);
+      if (b.length < 1000) break;
+    }
+    if (!missing.includes(t)) tables[t] = rows;
+  }));
+  const name = 'gt-' + today + '.json';
+  const up = await L.svc('/storage/v1/object/backups/' + name, { method: 'POST', headers: { 'x-upsert': 'true' }, body: JSON.stringify({ taken: new Date(nowMs).toISOString(), version: 1, tables }) });
+  if (!up.ok) return { error: 'Kunde inte spara: ' + JSON.stringify(up.body) };
+  const all = [...new Set([name, ...files])].sort().reverse(), old = all.slice(10);
+  if (old.length) await L.svc('/storage/v1/object/backups', { method: 'DELETE', body: JSON.stringify({ prefixes: old }) });
+  return { saved: name, tables: Object.keys(tables).length, rows: Object.values(tables).reduce((a, b) => a + b.length, 0), missing, removed: old.length };
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   try {
@@ -75,6 +107,7 @@ module.exports = async (req, res) => {
     });
     const ids = Object.keys(fixtures);
     const out = { dry, now: nowIso, fixtures: ids.length, invites: [], reminders: [], kits: [], motm: [], orders: ordRes };
+    if (!dry) { try { out.backup = await backupRun(nowMs, url.searchParams.get('backup') === '1'); } catch (e) { out.backup = { error: String((e && e.message) || e) }; } }
     try { out.motm = await motmRun(nowMs, dry, site); } catch (e) { out.motm = [{ error: String((e && e.message) || e) }]; }
     if (!ids.length) return res.status(200).json(out);
 
