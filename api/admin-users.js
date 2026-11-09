@@ -39,6 +39,18 @@ module.exports = async (req, res) => {
       }
     };
 
+    if (act === 'push') {
+      // Skickar en pushnotis till en spelare (admin). Kräver att spelaren har konto och tillåtit notiser.
+      const miss2 = L.missing(['ONESIGNAL_APP_ID', 'ONESIGNAL_REST_API_KEY']);
+      if (miss2.length) return res.status(500).json({ error: 'Miljövariabler saknas i Vercel: ' + miss2.join(', ') });
+      const heading = String(b.heading || '').trim().slice(0, 80), message = String(b.message || '').trim().slice(0, 500);
+      if (!heading || !message) return res.status(400).json({ error: 'Rubrik och meddelande krävs.' });
+      if (!b.user_id) return res.status(400).json({ error: 'Spelaren saknar konto.' });
+      let url = String(b.url || '').trim();
+      if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+      const r = await L.pushToUsers([b.user_id], heading, message, url || L.siteUrl(req));
+      return res.status(200).json({ ok: true, result: r });
+    }
     if (act === 'list') {
       const [p, a, u] = await Promise.all([
         L.svc('/rest/v1/player_profiles?select=*&order=full_name'),
