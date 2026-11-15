@@ -43,7 +43,14 @@ module.exports = async (req, res) => {
 
     const pf = await L.svc('/rest/v1/notification_preferences?select=user_id,' + key);
     const on = new Set((pf.body || []).filter((p) => p[key] === true).map((p) => p.user_id));
-    const to = [...on].filter((u) => u !== me.id); // alla som valt denna notis (spelare och admin med inställning)
+    // Den som själv tackat nej till just den här matchen får inga fler notiser om den
+    const [nr, pp] = await Promise.all([
+      L.svc('/rest/v1/match_calls?select=player_id&match_id=eq.' + matchId + '&status=eq.no&player_id=not.is.null'),
+      L.svc('/rest/v1/player_profiles?select=user_id,player_id'),
+    ]);
+    const declined = new Set(((nr.ok && nr.body) || []).map((c) => c.player_id));
+    const optedOut = new Set(((pp.ok && pp.body) || []).filter((p) => declined.has(p.player_id)).map((p) => p.user_id));
+    const to = [...on].filter((u) => u !== me.id && !optedOut.has(u)); // alla som valt denna notis, utom de som tackat nej till matchen
     const r = await L.pushToUsers(to, heading, msg, L.siteUrl(req) + '/#/m/' + matchId);
     return res.status(200).json({ ok: true, kind: key, recipients: to.length, result: r });
   } catch (e) {

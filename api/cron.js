@@ -103,7 +103,9 @@ module.exports = async (req, res) => {
     const fixtures = {};
     (fx.body || []).forEach((f) => {
       const { slots, kickoffMs } = L.reminderSlots(String(f.played_on).slice(0, 10), f.kickoff);
-      if (kickoffMs > nowMs) fixtures[f.id] = { ...f, slots, kickoffMs, date: String(f.played_on).slice(0, 10), inviteAt: L.stockholmMs(L.addDays(String(f.played_on).slice(0, 10), -3), '11:00') };
+      const dstr = String(f.played_on).slice(0, 10);
+      const slotsMaybe = [L.stockholmMs(L.addDays(dstr, -1), '18:00'), L.stockholmMs(dstr, '12:00')].filter((t) => t < kickoffMs);
+      if (kickoffMs > nowMs) fixtures[f.id] = { ...f, slots, slotsMaybe, kickoffMs, date: String(f.played_on).slice(0, 10), inviteAt: L.stockholmMs(L.addDays(String(f.played_on).slice(0, 10), -3), '11:00') };
     });
     const ids = Object.keys(fixtures);
     const out = { dry, now: nowIso, fixtures: ids.length, invites: [], reminders: [], kits: [], motm: [], orders: ordRes };
@@ -112,11 +114,13 @@ module.exports = async (req, res) => {
     if (!ids.length) return res.status(200).json(out);
 
     // Aktiva spelarprofiler + notisinställningar
-    const [pr, pf, cl] = await Promise.all([
+    const callsQ = (extra) => L.svc('/rest/v1/match_calls?select=id,match_id,player_id,status,created_at,invited_at,last_reminder_at,reminder_count' + extra + '&player_id=not.is.null&match_id=in.(' + ids.join(',') + ')');
+    const [pr, pf, cl0] = await Promise.all([
       L.svc('/rest/v1/player_profiles?select=user_id,player_id,full_name,active'),
       L.svc('/rest/v1/notification_preferences?select=user_id,calls,reminders'),
-      L.svc('/rest/v1/match_calls?select=id,match_id,player_id,status,created_at,invited_at,last_reminder_at,reminder_count&player_id=not.is.null&match_id=in.(' + ids.join(',') + ')'),
+      callsQ(',answer_by,deadline_notified_at'),
     ]);
+    const cl = cl0.ok ? cl0 : await callsQ(''); // 42_avvaktar.sql ej körd än
     if (!pr.ok || !pf.ok || !cl.ok) return res.status(500).json({ error: 'Kunde inte läsa data', detail: [pr.body, pf.body, cl.body].find((x) => x && x.message) });
     const profByPlayer = {}; (pr.body || []).forEach((p) => { if (p.active) profByPlayer[p.player_id] = p; });
     const prefs = {}; (pf.body || []).forEach((p) => { prefs[p.user_id] = p; });
@@ -144,21 +148,42 @@ module.exports = async (req, res) => {
     // 2) Påminnelser till obesvarade kallelser
     const byMatchRem = {};
     for (const c of calls) {
-      if (c.status || !c.invited_at || !profByPlayer[c.player_id]) continue;
+      // "Avvaktar" med svarstid: inga påminnelser före svarstiden. Har den passerat utan nytt svar räknas man som obesvarad.
+      const mayExp = c.status === 'maybe' && c.answer_by && Date.parse(c.answer_by) <= nowMs;
+      if ((c.status && !mayExp) || !c.invited_at || !profByPlayer[c.player_id]) continue;
       const f = fixtures[c.match_id];
       const created = Date.parse(c.created_at);
-      const after = Math.max(created, Date.parse(c.invited_at) || 0);
-      const due = f.slots.filter((t) => t <= nowMs && t > after); // endast tider efter att kallelsen skapats/skickats
+      let after = Math.max(created, Date.parse(c.invited_at) || 0);
+      if (mayExp) after = Math.max(after, Date.parse(c.answer_by));
+      const due = (mayExp ? f.slotsMaybe : f.slots).filter((t) => t <= nowMs && t > after); // endast tider efter att kallelsen skapats/skickats
       if (!due.length) continue;
       const latest = Math.max(...due);
       if (c.last_reminder_at && Date.parse(c.last_reminder_at) >= latest) continue; // redan påmind för denna tidpunkt
       const uid = profByPlayer[c.player_id].user_id;
       if (dry) { (byMatchRem[c.match_id] = byMatchRem[c.match_id] || []).push({ c, uid, wants: wants(uid, 'reminders') }); continue; }
       // "Claim": bara en körning får vinna (skyddar mot dubbla cron-anrop)
-      const r = await L.svc('/rest/v1/match_calls?id=eq.' + c.id + '&status=is.null' + (c.last_reminder_at ? '&last_reminder_at=eq.' + L.q(c.last_reminder_at) : '&last_reminder_at=is.null'),
+      const r = await L.svc('/rest/v1/match_calls?id=eq.' + c.id + (mayExp ? '&status=eq.maybe' : '&status=is.null') + (c.last_reminder_at ? '&last_reminder_at=eq.' + L.q(c.last_reminder_at) : '&last_reminder_at=is.null'),
         { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ last_reminder_at: nowIso, reminder_count: (c.reminder_count || 0) + 1 }) });
       if (r.ok && r.body && r.body.length) (byMatchRem[c.match_id] = byMatchRem[c.match_id] || []).push({ c, uid, wants: wants(uid, 'reminders') });
     }
+    // 2b) "Dags att svara": svarstiden för dem som tryckt Avvaktar har passerat
+    out.deadlines = [];
+    try {
+      const byMatchDl = {};
+      for (const c of calls) {
+        if (c.status !== 'maybe' || !c.answer_by || Date.parse(c.answer_by) > nowMs || c.deadline_notified_at || !profByPlayer[c.player_id]) continue;
+        if (dry) { (byMatchDl[c.match_id] = byMatchDl[c.match_id] || []).push({ c, uid: profByPlayer[c.player_id].user_id }); continue; }
+        const r = await L.svc('/rest/v1/match_calls?id=eq.' + c.id + '&status=eq.maybe&deadline_notified_at=is.null', { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ deadline_notified_at: nowIso }) });
+        if (r.ok && r.body && r.body.length) (byMatchDl[c.match_id] = byMatchDl[c.match_id] || []).push({ c, uid: profByPlayer[c.player_id].user_id });
+      }
+      for (const [mid, list] of Object.entries(byMatchDl)) {
+        const users = list.map((x) => x.uid).filter((u) => wants(u, 'reminders'));
+        let r = { dry: true };
+        if (!dry) r = await L.pushToUsers(users, 'Dags att svara 🤔', 'Din svarstid har gått ut. Kan du bestämma dig nu? ' + label(fixtures[mid]), site + '/#/kallelser/' + mid);
+        out.deadlines.push({ match: +mid, recipients: users.length, result: r });
+      }
+    } catch (e) { out.deadlines.push({ error: String((e && e.message) || e) }); }
+
     for (const [mid, list] of Object.entries(byMatchRem)) {
       const users = list.filter((x) => x.wants).map((x) => x.uid);
       let r = { dry: true };
