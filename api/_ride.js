@@ -71,25 +71,43 @@ async function planRoute(start, stops, dest, t0Ms) {
 const get = async (path) => { const r = await L.svc(path); if (!r.ok) throw new Error('db ' + path + ': ' + JSON.stringify(r.body)); return r.body || []; };
 const getRide = async (id) => (await get('/rest/v1/rides?select=*&id=eq.' + id))[0] || null;
 const getBookings = (rideId) => get('/rest/v1/ride_bookings?select=*&ride_id=eq.' + rideId);
-const getFixture = async (id) => (await get('/rest/v1/fixtures?select=id,opp,played_on,kickoff,venue,venue_lat,venue_lng&id=eq.' + id))[0] || null;
+const getFixture = async (id) => (await get('/rest/v1/fixtures?select=id,opp,played_on,kickoff,venue,address,venue_lat,venue_lng&id=eq.' + id))[0] || null;
 const getPlan = async (rideId) => { const r = (await get('/rest/v1/ride_plan?select=plan&ride_id=eq.' + rideId))[0]; return r ? r.plan : null; };
 const names = async (ids) => { ids = [...new Set(ids)].filter(Boolean); if (!ids.length) return {}; const o = {}; (await get('/rest/v1/players?select=id,name&id=in.(' + ids.join(',') + ')')).forEach((p) => { o[p.id] = p.name; }); return o; };
 const first = (n) => String(n || '').split(' ')[0] || 'Någon';
 
-// Matchplatsens koordinater. Saknas de försöker vi slå upp fixtures.venue (en gång) via Nominatim.
+// Sökfraser för matchplatsen, i prioritetsordning: adressen (med och utan postnummer), hall + adress, sist bara hallens namn.
+function venueQueries(f) {
+  const out = [], add = (s) => { s = String(s || '').replace(/\s+/g, ' ').replace(/\s+,/g, ',').trim(); if (s.length >= 3 && !out.includes(s)) out.push(s); };
+  const addr = String(f.address || '').trim(), ven = String(f.venue || '').trim();
+  if (addr) {
+    add(addr);
+    const noPc = addr.replace(/\b\d{3}\s?\d{2}\b/, '').replace(/,\s*,/g, ',').replace(/[,\s]+$/, '').trim();
+    add(noPc);
+    if (ven) add(ven + ', ' + noPc);
+  }
+  if (ven) add(ven + ', Stockholm');
+  return out.slice(0, 4);
+}
+
+// Matchplatsens koordinater. Saknas de försöker vi slå upp fixtures.address och fixtures.venue via Nominatim och sparar träffen.
 async function venueOf(f) {
   if (f.venue_lat != null && f.venue_lng != null) return { lat: f.venue_lat, lng: f.venue_lng };
-  if (!f.venue || String(f.venue).trim().length < 3) return null;
-  try {
-    const base = (L.env('NOMINATIM_URL') || 'https://nominatim.openstreetmap.org').replace(/\/+$/, '');
-    const r = await fetch(base + '/search?format=json&limit=1&countrycodes=se&q=' + encodeURIComponent(f.venue + ', Stockholm'), { headers: { 'User-Agent': 'golden-tank-app (klubbapp)' } });
-    const j = await r.json();
-    if (j && j[0]) {
-      const v = { lat: +j[0].lat, lng: +j[0].lon };
-      await L.svc('/rest/v1/fixtures?id=eq.' + f.id + '&venue_lat=is.null', { method: 'PATCH', body: JSON.stringify({ venue_lat: v.lat, venue_lng: v.lng }) });
-      return v;
-    }
-  } catch (e) { /* ingen träff */ }
+  const base = (L.env('NOMINATIM_URL') || 'https://nominatim.openstreetmap.org').replace(/\/+$/, '');
+  const qs = venueQueries(f);
+  for (let k = 0; k < qs.length; k++) {
+    if (k) await new Promise((r) => setTimeout(r, 1100)); // Nominatim tillåter ca 1 sökning per sekund
+    try {
+      const r = await fetch(base + '/search?format=json&limit=1&countrycodes=se&q=' + encodeURIComponent(qs[k]), { headers: { 'User-Agent': 'golden-tank-app (klubbapp)' } });
+      if (!r.ok) continue;
+      const j = await r.json();
+      if (j && j[0]) {
+        const v = { lat: +j[0].lat, lng: +j[0].lon };
+        await L.svc('/rest/v1/fixtures?id=eq.' + f.id + '&venue_lat=is.null', { method: 'PATCH', body: JSON.stringify({ venue_lat: v.lat, venue_lng: v.lng }) });
+        return v;
+      }
+    } catch (e) { /* prova nästa fras */ }
+  }
   return null;
 }
 
