@@ -374,7 +374,7 @@ else if(k=='og'){A++;ic='⚽';main='<b>Mål för Golden Tank</b>';sub='Självmå
 else if(k=='o'){B++;ic='🥅';main='<b>Mål för '+esc(r.o)+'</b>'}
 else if(k=='op'){B++;ic='🥅';main='<b>Straffmål för '+esc(r.o)+'</b>';sub=x?'Straff orsakad av '+esc(x):''}
 else if(k=='os'){B++;ic='🥅';main='<b>Mål för '+esc(r.o)+'</b>';sub='Självmål av '+esc(x)}
-else if(k=='opm'){ic='❌';main='<b>Straffmiss för '+esc(r.o)+'</b>';sub=x?'Straff orsakad av '+esc(x):''}
+else if(k=='opm'){ic='❌';main='<b>Straffmiss för '+esc(r.o)+'</b>';sub=[x?'Straff orsakad av '+esc(x):'',d.gk&&!ev.some(z=>z[1]=='ps'&&z[0]==t)?'🧤 Räddad av '+esc(d.gk):''].filter(Boolean).join(' · ')}
 else if(k=='pm'){ic='❌';main=lk(x);sub='Straffmiss'}
 else if(k=='ps'){ic='🧤';main='<b>Räddad straff</b>';sub=x?esc(x):''}
 else if(k=='y'){ic='<i class="yc"></i>';main=lk(x);sub='Gult kort · utvisning 5 min'}
@@ -429,7 +429,7 @@ ${trophyH2()}
 let SM=Object.fromEntries(DB.series.map((s,i)=>[s.key,i]));
 function calc(){const ix={};P.forEach(p=>{Object.assign(p,{apps:0,goals:0,assists:0,yc:0,rc:0,w:0,d:0,l:0,g26:0,act:false,cs:0,csk:0,csd:0,og:0,fk:0,hd:0,pc:0,gkn:0,pg:0,pm:0,ps:0,_ss:{}});ix[p.name]=p});
 DB.results.forEach(r=>{const m=DB.md[r.id];if(!m)return;const k=SM[r.s],L=rs(r);m.p.forEach(x=>{const p=ix[x[0]];if(!p)return;p.apps++;p.goals+=x[1];p.assists+=x[2];p.yc+=x[3];p.og+=x[4]||0;L=='V'?p.w++:L=='O'?p.d++:p.l++;const q=p._ss[k]||(p._ss[k]=[0,0,0]);q[0]++;q[1]+=x[1];q[2]+=x[2];if(curS(r.s)){p.g26+=x[1];p.act=true}});
-(m.e||[]).forEach(e=>{const p=ix[e[2]];if(!p)return;if(e[1]=='r')p.rc++;if(e[1]=='fk')p.fk++;if(e[1]=='hd')p.hd++;if(e[1]=='op'||e[1]=='opm')p.pc++;if(e[1]=='pg')p.pg++;if(e[1]=='pm')p.pm++;if(e[1]=='ps')p.ps++});if(ix[m.gk]){ix[m.gk].gkn++;if(r.ga==0)ix[m.gk].csk++}if(r.ga==0)m.p.forEach(x=>{const q=ix[x[0]];if(q&&q.def&&x[0]!=m.gk)q.csd++})});
+(m.e||[]).forEach(e=>{if(e[1]=='opm'&&ix[m.gk]&&!(m.e||[]).some(z=>z[1]=='ps'&&z[0]==e[0]))ix[m.gk].ps++}); (m.e||[]).forEach(e=>{const p=ix[e[2]];if(!p)return;if(e[1]=='r')p.rc++;if(e[1]=='fk')p.fk++;if(e[1]=='hd')p.hd++;if(e[1]=='op'||e[1]=='opm')p.pc++;if(e[1]=='pg')p.pg++;if(e[1]=='pm')p.pm++;if(e[1]=='ps')p.ps++});if(ix[m.gk]){ix[m.gk].gkn++;if(r.ga==0)ix[m.gk].csk++}if(r.ga==0)m.p.forEach(x=>{const q=ix[x[0]];if(q&&q.def&&x[0]!=m.gk)q.csd++})});
 P.forEach(p=>{p.cs=p.csk+p.csd;p.n=p.apps;p.wp=p.n?p.w/p.n*100:0;p.wq=p.apps>=10?p.wp:0;p.pts=p.goals+p.assists;p.all=p.goals;p.ss=Object.entries(p._ss).map(([k,v])=>[+k,...v]).sort((a,b)=>a[0]-b[0])})}
 const CUR=()=>DB.series.filter(s=>s.cur).map(s=>s.key),curS=k=>CUR().includes(k);
 derive();calc();
