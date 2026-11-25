@@ -10,6 +10,7 @@
 // Lägg till ?dry=1 för att se vad som skulle skickas utan att skicka eller markera något.
 const L = require('./_lib');
 const notifyOrders = require('./_orders');
+const CE = require('./_callevent');
 const GRACE_MS = 10 * 60e3; // nya kallelser väntar 10 min så att admin hinner justera truppen
 
 // Matchens lirare: 1 timme efter avspark skapas omröstningen (stänger kl 23:59 samma dag) och notis går till alla som svarat ja.
@@ -111,6 +112,20 @@ module.exports = async (req, res) => {
     const out = { dry, now: nowIso, fixtures: ids.length, invites: [], reminders: [], kits: [], motm: [], orders: ordRes };
     if (!dry) { try { out.backup = await backupRun(nowMs, url.searchParams.get('backup') === '1'); } catch (e) { out.backup = { error: String((e && e.message) || e) }; } }
     try { out.motm = await motmRun(nowMs, dry, site); } catch (e) { out.motm = [{ error: String((e && e.message) || e) }]; }
+    // Säkerhetsnät för anmälningar/återbud: svar som aldrig notifierats (t.ex. om appen stängdes innan den hann skicka).
+    // Bara svar som är 2–30 min gamla (appen får först chansen att skicka själv); dubblettskyddet i push_log gör att inget skickas två gånger.
+    out.callEvents = [];
+    if (!dry) {
+      try {
+        const from = new Date(nowMs - 30 * 60e3).toISOString(), to = new Date(nowMs - 2 * 60e3).toISOString();
+        const rr = await L.svc('/rest/v1/match_calls?select=match_id,player_id,status,prev_status&status=not.is.null&player_id=not.is.null&responded_at=gte.' + L.q(from) + '&responded_at=lte.' + L.q(to));
+        for (const c of (rr.ok && rr.body) || []) {
+          if (c.prev_status === c.status) continue;
+          const r = await CE.notifyCallEvent({ matchId: c.match_id, playerId: c.player_id, site, maxAgeMs: 40 * 60e3, requireClaim: true });
+          if (!r.skipped || r.error) out.callEvents.push({ match: c.match_id, player: c.player_id, ...r });
+        }
+      } catch (e) { out.callEvents.push({ error: String((e && e.message) || e) }); }
+    }
     if (!ids.length) return res.status(200).json(out);
 
     // Aktiva spelarprofiler + notisinställningar
