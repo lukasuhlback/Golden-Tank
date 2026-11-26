@@ -11,6 +11,7 @@
 const L = require('./_lib');
 const notifyOrders = require('./_orders');
 const CE = require('./_callevent');
+const MW = require('./_motmwin');
 const GRACE_MS = 10 * 60e3; // nya kallelser väntar 10 min så att admin hinner justera truppen
 
 // Matchens lirare: 1 timme efter avspark skapas omröstningen (stänger kl 23:59 samma dag) och notis går till alla som svarat ja.
@@ -112,6 +113,8 @@ module.exports = async (req, res) => {
     const out = { dry, now: nowIso, fixtures: ids.length, invites: [], reminders: [], kits: [], motm: [], orders: ordRes };
     if (!dry) { try { out.backup = await backupRun(nowMs, url.searchParams.get('backup') === '1'); } catch (e) { out.backup = { error: String((e && e.message) || e) }; } }
     try { out.motm = await motmRun(nowMs, dry, site); } catch (e) { out.motm = [{ error: String((e && e.message) || e) }]; }
+    // Matchens lirare: notis till den/de som utsetts när röstningen stängt (strax efter midnatt)
+    try { out.motmWinners = await MW.motmWinnersRun(nowMs, dry, site); } catch (e) { out.motmWinners = [{ error: String((e && e.message) || e) }]; }
     // Säkerhetsnät för anmälningar/återbud: svar som aldrig notifierats (t.ex. om appen stängdes innan den hann skicka).
     // Bara svar som är 2–30 min gamla (appen får först chansen att skicka själv); dubblettskyddet i push_log gör att inget skickas två gånger.
     out.callEvents = [];
