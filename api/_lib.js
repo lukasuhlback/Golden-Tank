@@ -56,7 +56,9 @@ async function osPost(payload) {
   });
   const out = await r.json().catch(() => ({}));
   console.log('OneSignal', r.status, JSON.stringify(out), JSON.stringify(payload));
-  return { ok: r.ok && !!out.id && !out.errors, out, status: r.status };
+  // id finns bara när notisen skapats. errors.invalid_aliases = några mottagare saknar push, men de övriga fick notisen.
+  const partial = !!(out.errors && !Array.isArray(out.errors) && out.errors.invalid_aliases);
+  return { ok: r.ok && !!out.id && (!out.errors || partial), out, status: r.status };
 }
 
 // Läser om en användare har push påslaget i OneSignal. Resultat per user_id:
@@ -84,7 +86,7 @@ async function pushStatus(userIds) {
 async function pushToUsers(ids, heading, message, url) {
   ids = [...new Set(ids)].filter(Boolean);
   if (!ids.length) return { sent: 0, note: 'inga mottagare' };
-  let sent = 0; const errors = [];
+  let sent = 0; const errors = [], unreached = [];
   for (let i = 0; i < ids.length; i += 1500) {
     const part = ids.slice(i, i + 1500);
     const r = await osPost({
@@ -93,10 +95,13 @@ async function pushToUsers(ids, heading, message, url) {
       contents: { en: message, sv: message },
       url,
     });
-    if (r.ok) sent += part.length;
+    if (r.ok) {
+      const bad = (r.out.errors && r.out.errors.invalid_aliases && r.out.errors.invalid_aliases.external_id) || [];
+      unreached.push(...bad); sent += part.length - bad.length;
+    }
     else errors.push(r.out.errors || r.out); // t.ex. "All included players are not subscribed" = ingen har tillåtit push än
   }
-  return { sent, errors };
+  return { sent, errors, unreached };
 }
 
 // ---- Tid (Europe/Stockholm) ------------------------------------------------------

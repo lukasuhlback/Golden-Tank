@@ -10,7 +10,6 @@ async function claim(ref) {
   if (r.status === 409 || (r.body && r.body.code === '23505')) return 'dup';
   return 'na';
 }
-const release = (ref) => L.svc('/rest/v1/push_log?kind=eq.call&ref=eq.' + L.q(ref), { method: 'DELETE' });
 
 // opts: { matchId, playerId, site, maxAgeMs, requireClaim }
 async function notifyCallEvent(opts) {
@@ -54,8 +53,8 @@ async function notifyCallEvent(opts) {
   const optedOut = new Set(((pp.ok && pp.body) || []).filter((p) => declined.has(p.player_id)).map((p) => p.user_id));
   const to = [...on].filter((u) => u !== prof.user_id && !optedOut.has(u));
   const r = to.length ? await L.pushToUsers(to, heading, msg, site + '/#/m/' + matchId) : { sent: 0, note: 'inga mottagare' };
-  console.log('call-event', key, 'match', matchId, 'spelare', playerId, 'valt:', on.size, 'mottagare:', to.length, 'skickat:', r.sent, JSON.stringify(r.errors || []));
-  if (to.length && !r.sent && c === 'claimed') await release(ref); // inget gick iväg: tillåt nytt försök
+  console.log('call-event', key, 'match', matchId, 'spelare', playerId, 'valt:', on.size, 'mottagare:', to.length, 'skickat:', r.sent, 'ej nåbara:', JSON.stringify(r.unreached || []), JSON.stringify(r.errors || []));
+  // Ingen ny sändning även om OneSignal rapporterat fel: ett svar notifieras högst en gång (annars riskerar vi dubbletter).
   return { ok: true, kind: key, optedIn: on.size, declinedMatch: [...on].filter((u) => optedOut.has(u)).length, recipients: to.length, result: r };
 }
 
